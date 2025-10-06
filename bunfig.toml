@@ -1,0 +1,8 @@
+# Bun configuration for ModernA11y
+[install]
+# Skip postinstall scripts to avoid esbuild issues
+ignoreScripts = true
+
+[install.cache]
+# Enable caching for faster installs
+disable = false

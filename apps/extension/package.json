@@ -1,0 +1,30 @@
+{
+  "name": "@moderna11y/extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run build && bun run build:background --watch",
+    "build": "bun run clean && bun run build:popup && bun run build:content && bun run build:background && bun run copy:static",
+    "build:popup": "bun build src/popup/index.tsx --outdir=dist --target=browser --minify --entry-naming=[dir]/popup.js",
+    "build:content": "bun build src/content/index.ts --outdir=dist --target=browser --minify --entry-naming=content.js",
+    "build:background": "bun build src/background/index.ts --outdir=dist --target=browser --minify --entry-naming=background.js",
+    "copy:static": "cp src/popup/index.html dist/popup.html && cp manifest.json dist/ && mkdir -p dist/icons",
+    "clean": "rm -rf dist && mkdir -p dist",
+    "lint": "biome lint src",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@moderna11y/scanner": "workspace:*",
+    "axe-core": "^4.10.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.268",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.5.4"
+  }
+}
