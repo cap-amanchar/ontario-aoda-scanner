@@ -1,13 +1,13 @@
 // Background service worker for ModernA11y extension
 
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('🚀 ModernA11y extension installed');
+  console.log('🚀 ModernA11y extension installed - Open source, privacy-first');
 
-  // Set default settings
+  // Initialize default settings
   chrome.storage.local.set({
-    scansPerformed: 0,
-    scanLimit: 5, // Free tier limit
-    isPro: false,
+    jurisdiction: 'federal', // federal, ontario, quebec
+    darkMode: false,
+    autoScan: false,
   });
 });
 
@@ -20,11 +20,9 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 // Handle messages from content script or popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'incrementScanCount') {
-    chrome.storage.local.get(['scansPerformed'], (result) => {
-      const newCount = (result.scansPerformed || 0) + 1;
-      chrome.storage.local.set({ scansPerformed: newCount });
-      sendResponse({ scansPerformed: newCount });
+  if (request.action === 'getSettings') {
+    chrome.storage.local.get(['jurisdiction', 'darkMode', 'autoScan'], (result) => {
+      sendResponse(result);
     });
     return true;
   }

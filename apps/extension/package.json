@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "bun run build && bun run build:background --watch",
-    "build": "bun run clean && bun run build:popup && bun run build:content && bun run build:background && bun run copy:static",
-    "build:popup": "bun build src/popup/index.tsx --outdir=dist --target=browser --minify --entry-naming=[dir]/popup.js",
+    "build": "bun run clean && bun run build:popup && bun run build:content && bun run build:background && bun run copy:static && bun run generate:icons && bun run validate",
+    "build:popup": "bun build src/popup/index.tsx --target=browser --minify --outdir=dist --entry-naming=popup.js",
     "build:content": "bun build src/content/index.ts --outdir=dist --target=browser --minify --entry-naming=content.js",
     "build:background": "bun build src/background/index.ts --outdir=dist --target=browser --minify --entry-naming=background.js",
-    "copy:static": "cp src/popup/index.html dist/popup.html && cp manifest.json dist/ && mkdir -p dist/icons",
+    "copy:static": "cp src/popup/index.html dist/popup.html && cp src/popup/styles.css dist/popup.css && cp manifest.json dist/ && mkdir -p dist/icons",
+    "generate:icons": "bun run scripts/generate-icons.ts",
+    "validate": "bun run scripts/validate-build.ts",
     "clean": "rm -rf dist && mkdir -p dist",
     "lint": "biome lint src",
     "type-check": "tsc --noEmit"

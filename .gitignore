@@ -2,6 +2,7 @@
 node_modules/
 .pnp/
 .pnp.js
+bun.lockb
 
 # Build outputs
 dist/
@@ -36,3 +37,15 @@ yarn-error.log*
 
 # Turbo
 .turbo/
+
+# Local scripts and personal files
+bashrc
+
+# Claude Code artifacts
+.claude/
+*_SUMMARY.md
+*_AUDIT.md
+*_COVERAGE.md
+*_OPTIMIZATION.md
+QUICK_START.md
+CLAUDE.md

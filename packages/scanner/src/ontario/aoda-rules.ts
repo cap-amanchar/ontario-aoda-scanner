@@ -173,5 +173,6 @@ export function getAODAMapping(ruleId: string): AODARule | undefined {
 // Check if rule is Ontario-critical
 export function isOntarioCritical(ruleId: string): boolean {
   const rule = AODA_RULES_MAP[ruleId];
-  return rule?.impact === 'critical' || rule?.aodaSection.includes('Bilingual');
+  if (!rule) return false;
+  return rule.impact === 'critical' || rule.aodaSection.includes('Bilingual');
 }
