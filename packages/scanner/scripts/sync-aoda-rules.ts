@@ -11,8 +11,8 @@
  * 5. Generates documentation
  */
 
-import { writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { writeFileSync, mkdirSync } from 'node:fs';
+import { join, dirname } from 'node:path';
 import { AODA_RULES_MAP } from '../src/ontario/aoda-rules';
 import type { ImpactLevel } from '../src/types';
 
@@ -139,6 +139,7 @@ function exportRulesJSON(): void {
     stats: generateStats(),
   };
 
+  mkdirSync(dirname(outputPath), { recursive: true });
   writeFileSync(outputPath, JSON.stringify(exportData, null, 2));
   console.log(`✓ Exported rules to ${outputPath}`);
 }
@@ -186,6 +187,7 @@ function generateDocs(): void {
   }
 
   const docsPath = join(import.meta.dir, '../docs/aoda-rules-reference.md');
+  mkdirSync(dirname(docsPath), { recursive: true });
   writeFileSync(docsPath, markdown);
   console.log(`✓ Generated documentation at ${docsPath}`);
 }
