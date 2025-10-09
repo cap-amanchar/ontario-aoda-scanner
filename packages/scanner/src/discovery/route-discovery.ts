@@ -234,9 +234,9 @@ export function normalizeUrl(url: string): string {
     const parsed = new URL(url);
     // Remove fragment
     parsed.hash = '';
-    // Remove trailing slash (except for root)
-    if (parsed.pathname !== '/' && parsed.pathname.endsWith('/')) {
-      parsed.pathname = parsed.pathname.slice(0, -1);
+    // Remove all trailing slashes (except for root)
+    if (parsed.pathname !== '/') {
+      parsed.pathname = parsed.pathname.replace(/\/+$/, '');
     }
     return parsed.href;
   } catch (e) {
