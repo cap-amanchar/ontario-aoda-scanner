@@ -2,14 +2,44 @@ import type React from 'react';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from '../../utils/i18n';
 
+interface ViolationNode {
+  html: string;
+  target: string[];
+  failureSummary: string;
+}
+
+interface EnhancedViolation {
+  id: string;
+  impact: 'critical' | 'serious' | 'moderate' | 'minor';
+  description: string;
+  help: string;
+  helpUrl: string;
+  wcagCriterion?: string;
+  aodaSection?: string;
+  penalty?: string;
+  fixTime?: number;
+  affectedUsers?: string[];
+  nodes: ViolationNode[];
+}
+
+interface BilingualCheck {
+  hasLangAttribute: boolean;
+  isBilingual: boolean;
+  detectedLanguages: string[];
+  hasLanguageToggle: boolean;
+  hasFrenchContent: boolean;
+  isOntarioGov: boolean;
+  languageToggles: number;
+}
+
 interface PageScanResult {
   url: string;
   score: number;
   grade: string;
-  violations: any[];
+  violations: EnhancedViolation[];
   passes: number;
   incomplete: number;
-  bilingualCheck?: any;
+  bilingualCheck?: BilingualCheck;
   timestamp: string;
   error?: string;
 }
@@ -40,7 +70,7 @@ interface SiteReportModalProps {
 
 const SiteReportModal: React.FC<SiteReportModalProps> = ({ report, onClose }) => {
   const { t } = useTranslation();
-  const modalRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     if (modalRef.current) {
@@ -61,21 +91,38 @@ const SiteReportModal: React.FC<SiteReportModalProps> = ({ report, onClose }) =>
     });
   };
 
+  const handleOverlayClick = (e: React.MouseEvent | React.KeyboardEvent) => {
+    if (
+      e.type === 'click' ||
+      (e as React.KeyboardEvent).key === 'Enter' ||
+      (e as React.KeyboardEvent).key === ' '
+    ) {
+      onClose();
+    }
+  };
+
+  const handleContentClick = (e: React.MouseEvent | React.KeyboardEvent) => {
+    e.stopPropagation();
+  };
+
   return (
-    <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
-      <div
+    <div className="modal-overlay" onClick={handleOverlayClick} onKeyDown={handleOverlayClick}>
+      <dialog
         ref={modalRef}
         className="site-report-modal"
-        onClick={(e) => e.stopPropagation()}
-        tabIndex={-1}
+        onClick={handleContentClick}
+        onKeyDown={handleContentClick}
+        open
       >
         {/* Header */}
         <div className="site-report-header">
           <div>
-            <h2 className="site-report-title">🌐 {t('fullSiteScan')} {t('results')}</h2>
+            <h2 className="site-report-title">
+              🌐 {t('fullSiteScan')} {t('results')}
+            </h2>
             <p className="site-report-url">{report.baseUrl}</p>
           </div>
-          <button className="modal-close-x" onClick={onClose} aria-label="Close">
+          <button type="button" className="modal-close-x" onClick={onClose} aria-label="Close">
             ✕
           </button>
         </div>
@@ -90,13 +137,15 @@ const SiteReportModal: React.FC<SiteReportModalProps> = ({ report, onClose }) =>
             <div className="site-score-info">
               <div className="site-score-label">{t('averageScore')}</div>
               <div className="site-score-status">
-                {report.avgScore >= 90 ? '✅ ' + t('compliant') : '⚠️ ' + t('needsImprovement')}
+                {report.avgScore >= 90 ? `✅ ${t('compliant')}` : `⚠️ ${t('needsImprovement')}`}
               </div>
             </div>
           </div>
           <div className="site-stats">
             <div className="site-stat">
-              <div className="site-stat-value">{report.scannedPages}/{report.totalPages}</div>
+              <div className="site-stat-value">
+                {report.scannedPages}/{report.totalPages}
+              </div>
               <div className="site-stat-label">{t('pagesScanned')}</div>
             </div>
             <div className="site-stat">
@@ -121,7 +170,9 @@ const SiteReportModal: React.FC<SiteReportModalProps> = ({ report, onClose }) =>
                     <div className="top-violation-desc">{v.description}</div>
                     <div className="top-violation-meta">
                       <span className={`impact-badge ${v.impact}`}>{t(v.impact)}</span>
-                      <span className="frequency-badge">{v.frequency} {t('pages')}</span>
+                      <span className="frequency-badge">
+                        {v.frequency} {t('pages')}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -132,16 +183,18 @@ const SiteReportModal: React.FC<SiteReportModalProps> = ({ report, onClose }) =>
 
         {/* Page Results */}
         <div className="site-section">
-          <h3 className="site-section-title">{t('pageResults')} ({report.pageResults.length})</h3>
+          <h3 className="site-section-title">
+            {t('pageResults')} ({report.pageResults.length})
+          </h3>
           <div className="page-results-list">
-            {report.pageResults.map((page, idx) => (
-              <div key={idx} className="page-result-item">
+            {report.pageResults.map((page) => (
+              <div key={page.url} className="page-result-item">
                 <div className="page-result-main">
-                  <div className="page-url">
-                    {new URL(page.url).pathname || '/'}
-                  </div>
+                  <div className="page-url">{new URL(page.url).pathname || '/'}</div>
                   <div className="page-result-score">
-                    <div className={`page-score ${page.score >= 90 ? 'good' : page.score >= 70 ? 'ok' : 'bad'}`}>
+                    <div
+                      className={`page-score ${page.score >= 90 ? 'good' : page.score >= 70 ? 'ok' : 'bad'}`}
+                    >
                       {page.score}
                     </div>
                     <div className="page-grade">{page.grade}</div>
@@ -154,9 +207,7 @@ const SiteReportModal: React.FC<SiteReportModalProps> = ({ report, onClose }) =>
                   <span className="page-detail">
                     {page.passes} {t('passes')}
                   </span>
-                  {page.error && (
-                    <span className="page-error">❌ {page.error}</span>
-                  )}
+                  {page.error && <span className="page-error">❌ {page.error}</span>}
                 </div>
               </div>
             ))}
@@ -165,14 +216,14 @@ const SiteReportModal: React.FC<SiteReportModalProps> = ({ report, onClose }) =>
 
         {/* Actions */}
         <div className="site-report-actions">
-          <button className="report-action-btn primary" onClick={handleExportReport}>
+          <button type="button" className="report-action-btn primary" onClick={handleExportReport}>
             📄 {t('exportReport')}
           </button>
-          <button className="report-action-btn secondary" onClick={onClose}>
+          <button type="button" className="report-action-btn secondary" onClick={onClose}>
             {t('close')}
           </button>
         </div>
-      </div>
+      </dialog>
     </div>
   );
 };
@@ -202,6 +253,9 @@ function generateHTMLReport(report: SiteReport): string {
       .no-print { display: none !important; }
       .page-break { page-break-after: always; }
       @page { margin: 1cm; size: A4; }
+      details { display: block !important; }
+      details[open] summary { display: block; }
+      details > *:not(summary) { display: block !important; }
     }
 
     /* Print Button */
@@ -241,13 +295,29 @@ function generateHTMLReport(report: SiteReport): string {
     .violation.serious { border-color: #f97316; background: #fff7ed; }
     .violation.moderate { border-color: #eab308; background: #fefce8; }
     .violation.minor { border-color: #3b82f6; background: #eff6ff; }
-    .page-item { padding: 16px; border: 1px solid #e5e7eb; border-radius: 8px; margin: 12px 0; display: flex; justify-content: space-between; align-items: center; }
+    .page-item { padding: 0; border: 1px solid #e5e7eb; border-radius: 8px; margin: 12px 0; overflow: hidden; }
+    .page-header { padding: 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: #f9fafb; }
+    .page-header:hover { background: #f3f4f6; }
     .page-url { font-family: monospace; color: #2563eb; font-weight: 500; }
     .page-score { display: flex; gap: 12px; align-items: center; }
     .score-badge { padding: 8px 16px; border-radius: 6px; font-weight: 700; }
     .score-badge.good { background: #d1fae5; color: #065f46; }
     .score-badge.ok { background: #fef3c7; color: #92400e; }
     .score-badge.bad { background: #fee2e2; color: #991b1b; }
+    details { border: 1px solid #e5e7eb; border-radius: 8px; margin: 12px 0; }
+    summary { padding: 16px; cursor: pointer; background: #f9fafb; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+    summary::-webkit-details-marker { display: none; }
+    summary:hover { background: #f3f4f6; }
+    summary::after { content: '▼'; font-size: 12px; color: #6b7280; transition: transform 0.2s; }
+    details[open] summary::after { transform: rotate(180deg); }
+    .violations-list { padding: 16px; background: white; }
+    .violation-item { padding: 12px; margin: 8px 0; border-left: 4px solid; border-radius: 6px; }
+    .violation-item.critical { border-color: #ef4444; background: #fef2f2; }
+    .violation-item.serious { border-color: #f97316; background: #fff7ed; }
+    .violation-item.moderate { border-color: #eab308; background: #fefce8; }
+    .violation-item.minor { border-color: #3b82f6; background: #eff6ff; }
+    .violation-title { font-weight: 600; margin-bottom: 8px; }
+    .violation-meta { font-size: 13px; color: #6b7280; margin-top: 4px; }
     .footer { text-align: center; margin-top: 48px; padding-top: 24px; border-top: 1px solid #e5e7eb; color: #9ca3af; font-size: 12px; }
   </style>
   <script>
@@ -256,9 +326,22 @@ function generateHTMLReport(report: SiteReport): string {
         window.print();
       }, 500);
     };
+
     function printReport() {
-      window.print();
+      // Expand all dropdowns before printing
+      const allDetails = document.querySelectorAll('details');
+      allDetails.forEach(detail => detail.setAttribute('open', ''));
+
+      setTimeout(function() {
+        window.print();
+      }, 100);
     }
+
+    // Auto-expand all on print
+    window.onbeforeprint = function() {
+      const allDetails = document.querySelectorAll('details');
+      allDetails.forEach(detail => detail.setAttribute('open', ''));
+    };
   </script>
 </head>
 <body>
@@ -266,9 +349,9 @@ function generateHTMLReport(report: SiteReport): string {
   <button class="print-btn no-print" onclick="printReport()">🖨️ Print / Save as PDF</button>
 
   <div class="header">
-    <h1>🇨🇦 ComplyCA - Full Site AODA Report</h1>
+    <h1>ComplyCA - Full Site AODA Report</h1>
     <div class="subtitle">Ontario AODA Scanner</div>
-    <div class="branding">Developed by Nizar Amanchar for Canada ❤️</div>
+    <div class="branding">Made with ❤️ by Nizar Amanchar for small business owners</div>
   </div>
 
   <div class="score-card">
@@ -300,44 +383,57 @@ function generateHTMLReport(report: SiteReport): string {
     <p><strong>Strategy:</strong> ${report.strategy}</p>
   </div>
 
-  ${report.topViolations.length > 0 ? `
   <div class="section">
-    <h2 class="section-title">🚨 Top Violations Across Site</h2>
-    ${report.topViolations.map(v => `
-    <div class="violation ${v.impact}">
-      <div><strong>${v.description}</strong></div>
-      <div style="margin-top: 8px; font-size: 14px; color: #6b7280;">
-        Impact: <span style="text-transform: uppercase; font-weight: 600;">${v.impact}</span> •
-        Found on: <strong>${v.frequency} pages</strong>
-      </div>
-    </div>
-    `).join('')}
-  </div>
-  ` : ''}
-
-  <div class="section">
-    <h2 class="section-title">📄 Individual Page Results (${report.pageResults.length})</h2>
-    ${report.pageResults.map(page => `
-    <div class="page-item">
-      <div>
-        <div class="page-url">${page.url}</div>
-        <div style="font-size: 13px; color: #6b7280; margin-top: 4px;">
-          ${page.violations.length} violations • ${page.passes} passes
-          ${page.error ? `<span style="color: #dc2626;">• Error: ${page.error}</span>` : ''}
+    <h2 class="section-title">📄 Page Results (${report.pageResults.length})</h2>
+    ${report.pageResults
+      .map(
+        (page) => `
+    <details>
+      <summary>
+        <div style="flex: 1;">
+          <div class="page-url">${new URL(page.url).pathname || '/'}</div>
+          <div style="font-size: 13px; color: #6b7280; margin-top: 4px;">
+            ${page.violations.length} violations • ${page.passes} passes
+            ${page.error ? `<span style="color: #dc2626;">• Error: ${page.error}</span>` : ''}
+          </div>
         </div>
+        <div class="page-score">
+          <span class="score-badge ${page.score >= 90 ? 'good' : page.score >= 70 ? 'ok' : 'bad'}">
+            ${page.score}/100
+          </span>
+          <strong style="margin-left: 8px;">${page.grade}</strong>
+        </div>
+      </summary>
+      <div class="violations-list">
+        ${
+          page.violations.length === 0
+            ? '<p style="text-align: center; color: #059669; padding: 20px;">✨ No violations found!</p>'
+            : page.violations
+                .map(
+                  (v) => `
+        <div class="violation-item ${v.impact}">
+          <div class="violation-title">${v.description}</div>
+          <div class="violation-meta">
+            <strong>Impact:</strong> ${v.impact.toUpperCase()} •
+            ${v.wcagCriterion ? `<strong>WCAG:</strong> ${v.wcagCriterion} •` : ''}
+            ${v.aodaSection ? `<strong>AODA:</strong> ${v.aodaSection} •` : ''}
+            <strong>Elements:</strong> ${v.nodes?.length || 0}
+          </div>
+          ${v.help ? `<p style="margin-top: 8px; font-size: 14px;"><strong>How to fix:</strong> ${v.help}</p>` : ''}
+        </div>
+        `
+                )
+                .join('')
+        }
       </div>
-      <div class="page-score">
-        <span class="score-badge ${page.score >= 90 ? 'good' : page.score >= 70 ? 'ok' : 'bad'}">
-          ${page.score}/100
-        </span>
-        <strong>${page.grade}</strong>
-      </div>
-    </div>
-    `).join('')}
+    </details>
+    `
+      )
+      .join('')}
   </div>
 
   <div class="footer">
-    Made with ❤️ by Nizar Amanchar for Canada 🇨🇦<br>
+    Made with ❤️ by Nizar Amanchar for Canada<br>
     <small style="opacity: 0.7;">ComplyCA - Making the web accessible for everyone</small>
   </div>
 </body>

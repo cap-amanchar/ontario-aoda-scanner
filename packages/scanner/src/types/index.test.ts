@@ -70,8 +70,8 @@ describe('Zod Schema Validators', () => {
     });
 
     it('should reject violation with missing required fields', () => {
-      const invalidViolation = { ...validViolation };
-      (invalidViolation as any).id = undefined;
+      const invalidViolation: Record<string, unknown> = { ...validViolation };
+      invalidViolation.id = undefined;
 
       expect(() => AODAViolationSchema.parse(invalidViolation)).toThrow();
     });

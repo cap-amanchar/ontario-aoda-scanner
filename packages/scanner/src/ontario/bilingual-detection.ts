@@ -18,20 +18,20 @@ export interface BilingualDetectionOptions {
 
 // Common French UI/navigation words (must find multiple for confidence)
 const FRENCH_UI_KEYWORDS = [
-  'accueil',      // home
-  'à propos',     // about
-  'contactez',    // contact
-  'recherche',    // search
-  'services',     // services
-  'politique',    // policy
+  'accueil', // home
+  'à propos', // about
+  'contactez', // contact
+  'recherche', // search
+  'services', // services
+  'politique', // policy
   'confidentialité', // privacy
 ];
 
 // Strong French indicators (structural words)
 const FRENCH_STRUCTURAL_WORDS = [
-  'bienvenue',    // welcome
-  'français',     // french
-  'langue',       // language
+  'bienvenue', // welcome
+  'français', // french
+  'langue', // language
 ];
 
 const ONTARIO_GOV_DOMAINS = ['ontario.ca', '.on.ca', '.gc.ca', '.gouv.qc.ca'];
@@ -44,9 +44,7 @@ export function hasFrenchKeywords(text: string, minKeywords = 3): boolean {
   const lowerText = text.toLowerCase();
 
   // Count UI keywords found
-  const uiKeywordsFound = FRENCH_UI_KEYWORDS.filter((word) =>
-    lowerText.includes(word)
-  ).length;
+  const uiKeywordsFound = FRENCH_UI_KEYWORDS.filter((word) => lowerText.includes(word)).length;
 
   // Count structural words found
   const structuralWordsFound = FRENCH_STRUCTURAL_WORDS.filter((word) =>

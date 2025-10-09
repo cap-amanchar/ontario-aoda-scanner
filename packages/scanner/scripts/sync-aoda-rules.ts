@@ -11,8 +11,8 @@
  * 5. Generates documentation
  */
 
-import { writeFileSync, mkdirSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { AODA_RULES_MAP } from '../src/ontario/aoda-rules';
 import type { ImpactLevel } from '../src/types';
 
@@ -118,8 +118,7 @@ function generateStats(): RuleStats {
       AA: rules.filter((r) => r.wcagLevel === 'AA').length,
       AAA: rules.filter((r) => r.wcagLevel === 'AAA').length,
     },
-    avgFixTime:
-      rules.reduce((sum, r) => sum + r.estimatedFixTime, 0) / rules.length,
+    avgFixTime: rules.reduce((sum, r) => sum + r.estimatedFixTime, 0) / rules.length,
     ontarioSpecific: rules.filter((r) => r.aodaSection.includes('Bilingual')).length,
   };
 
@@ -151,9 +150,9 @@ function generateDocs(): void {
   const stats = generateStats();
   const rules = Object.entries(AODA_RULES_MAP);
 
-  let markdown = `# AODA Rules Reference\n\n`;
+  let markdown = '# AODA Rules Reference\n\n';
   markdown += `**Generated:** ${new Date().toLocaleString()}\n\n`;
-  markdown += `## Summary Statistics\n\n`;
+  markdown += '## Summary Statistics\n\n';
   markdown += `- **Total Rules:** ${stats.totalRules}\n`;
   markdown += `- **Critical:** ${stats.byCritical}\n`;
   markdown += `- **Serious:** ${stats.bySerious}\n`;
@@ -182,7 +181,7 @@ function generateDocs(): void {
       markdown += `**Affected Users:** ${rule.affectedUsers.join(', ')}\n\n`;
       markdown += `**Estimated Fix Time:** ${rule.estimatedFixTime} minutes\n\n`;
       markdown += `**Penalty:** ${rule.penalty}\n\n`;
-      markdown += `---\n\n`;
+      markdown += '---\n\n';
     }
   }
 

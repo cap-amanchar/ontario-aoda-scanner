@@ -8,9 +8,9 @@
  */
 
 export interface DiscoveryOptions {
-  maxPages?: number;      // Maximum pages to discover (default: 50)
-  maxDepth?: number;      // Maximum crawl depth for DOM strategy (default: 2)
-  timeout?: number;       // Request timeout in ms (default: 5000)
+  maxPages?: number; // Maximum pages to discover (default: 50)
+  maxDepth?: number; // Maximum crawl depth for DOM strategy (default: 2)
+  timeout?: number; // Request timeout in ms (default: 5000)
   includeExternal?: boolean; // Include external links (default: false)
 }
 
@@ -38,12 +38,18 @@ export async function discoverRoutes(
   const opts = { ...DEFAULT_OPTIONS, ...options };
   const origin = new URL(baseUrl).origin;
 
+  console.log(`[Discovery] Starting route discovery for: ${origin}`);
+  console.log(`[Discovery] Options:`, opts);
+
   // Strategy 1: Try sitemap.xml (fastest and most reliable)
   let urls = await discoverFromSitemap(origin, opts.timeout);
 
   if (urls.length > 0) {
+    console.log(`[Discovery] ✅ Sitemap strategy succeeded: ${urls.length} URLs found`);
+    const limited = limitUrls(urls, opts.maxPages);
+    console.log(`[Discovery] After limit: ${limited.length} URLs (max: ${opts.maxPages})`);
     return {
-      urls: limitUrls(urls, opts.maxPages),
+      urls: limited,
       strategy: 'sitemap',
       discoveredCount: urls.length,
       limitReached: urls.length > opts.maxPages,
@@ -51,9 +57,11 @@ export async function discoverRoutes(
   }
 
   // Strategy 2: Try robots.txt
+  console.log('[Discovery] Trying robots.txt strategy...');
   urls = await discoverFromRobots(origin, opts.timeout);
 
   if (urls.length > 0) {
+    console.log(`[Discovery] ✅ Robots.txt strategy succeeded: ${urls.length} URLs found`);
     return {
       urls: limitUrls(urls, opts.maxPages),
       strategy: 'robots',
@@ -63,8 +71,10 @@ export async function discoverRoutes(
   }
 
   // Strategy 3: DOM crawling (fallback, slower)
+  console.log('[Discovery] Falling back to DOM crawling...');
   urls = await discoverFromDOM(baseUrl, opts.maxDepth, origin, opts.includeExternal);
 
+  console.log(`[Discovery] DOM strategy found: ${urls.length} URLs`);
   return {
     urls: limitUrls(urls, opts.maxPages),
     strategy: 'dom',
@@ -86,38 +96,112 @@ async function discoverFromSitemap(origin: string, timeout: number): Promise<str
 
   for (const sitemapUrl of sitemapUrls) {
     try {
+      console.log(`[Discovery] Checking sitemap: ${sitemapUrl}`);
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
 
       const response = await fetch(sitemapUrl, { signal: controller.signal });
       clearTimeout(timeoutId);
 
-      if (!response.ok) continue;
+      if (!response.ok) {
+        console.log(`[Discovery] Sitemap not found: ${sitemapUrl}`);
+        continue;
+      }
 
       const xml = await response.text();
-      const urls = parseSitemapXML(xml);
 
-      if (urls.length > 0) {
-        return urls;
+      // Check if this is a sitemap index
+      const isSitemapIndex = xml.includes('<sitemapindex') ||
+                            (xml.includes('<sitemap>') && xml.includes('</sitemap>'));
+
+      if (isSitemapIndex) {
+        console.log(`[Discovery] Found sitemap index, fetching child sitemaps...`);
+        const childUrls = await parseAndFetchSitemapIndex(xml, timeout);
+        console.log(`[Discovery] Extracted ${childUrls.length} URLs from sitemap index`);
+        if (childUrls.length > 0) {
+          return childUrls;
+        }
+      } else {
+        const urls = parseSitemapXML(xml);
+        console.log(`[Discovery] Found ${urls.length} URLs in ${sitemapUrl}`);
+        if (urls.length > 0) {
+          return urls;
+        }
       }
     } catch (error) {
-      // Try next sitemap
-      continue;
+      console.log(`[Discovery] Error fetching sitemap: ${sitemapUrl}`, error);
     }
   }
 
+  console.log('[Discovery] No sitemaps found');
   return [];
 }
 
 /**
+ * Parse sitemap index and fetch all child sitemaps
+ */
+async function parseAndFetchSitemapIndex(xml: string, timeout: number): Promise<string[]> {
+  const allUrls: string[] = [];
+
+  // Extract child sitemap URLs
+  const locRegex = /<loc>\s*([^<]+)\s*<\/loc>/gi;
+  const sitemapUrls: string[] = [];
+  let match: RegExpExecArray | null;
+
+  locRegex.lastIndex = 0;
+  while ((match = locRegex.exec(xml)) !== null) {
+    const url = match[1].trim();
+    if (url && url.includes('sitemap') && url.endsWith('.xml')) {
+      sitemapUrls.push(url);
+      console.log(`[Discovery] Found child sitemap: ${url}`);
+    }
+  }
+
+  console.log(`[Discovery] Sitemap index contains ${sitemapUrls.length} child sitemaps`);
+
+  // Fetch each child sitemap
+  for (const sitemapUrl of sitemapUrls) {
+    try {
+      console.log(`[Discovery] Fetching child sitemap: ${sitemapUrl}`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      const response = await fetch(sitemapUrl, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const childXml = await response.text();
+        const urls = parseSitemapXML(childXml);
+        console.log(`[Discovery] Extracted ${urls.length} URLs from ${sitemapUrl}`);
+        allUrls.push(...urls);
+      }
+    } catch (error) {
+      console.log(`[Discovery] Error fetching child sitemap: ${sitemapUrl}`, error);
+    }
+  }
+
+  console.log(`[Discovery] Total URLs from all child sitemaps: ${allUrls.length}`);
+  return allUrls;
+}
+
+/**
  * Parse sitemap XML and extract URLs
+ * Handles both sitemap index files and regular sitemaps
  */
 function parseSitemapXML(xml: string): string[] {
   const urls: string[] = [];
 
+  // Check if this is a sitemap index (contains <sitemap> tags)
+  const isSitemapIndex = xml.includes('<sitemapindex') || xml.includes('<sitemap>');
+
+  console.log(`[Discovery] Parsing XML - Type: ${isSitemapIndex ? 'Sitemap Index' : 'Regular Sitemap'}`);
+
   // Match <loc>URL</loc> tags
   const locRegex = /<loc>\s*([^<]+)\s*<\/loc>/gi;
   let match: RegExpExecArray | null;
+
+  // Reset regex state
+  locRegex.lastIndex = 0;
 
   while ((match = locRegex.exec(xml)) !== null) {
     const url = match[1].trim();
@@ -126,25 +210,51 @@ function parseSitemapXML(xml: string): string[] {
     }
   }
 
-  // Also check for sitemap index (nested sitemaps)
-  const sitemapRegex = /<sitemap>[\s\S]*?<loc>\s*([^<]+)\s*<\/loc>[\s\S]*?<\/sitemap>/gi;
-  const nestedSitemaps: string[] = [];
+  console.log(`[Discovery] Extracted ${urls.length} total <loc> entries from XML`);
+  if (urls.length > 0) {
+    console.log(`[Discovery] First 5 URLs:`, urls.slice(0, 5));
+  } else {
+    console.log(`[Discovery] ⚠️ NO URLs extracted! XML length: ${xml.length} chars`);
+    console.log(`[Discovery] First 500 chars of XML:`, xml.substring(0, 500));
+  }
 
-  while ((match = sitemapRegex.exec(xml)) !== null) {
-    const sitemapUrl = match[1].trim();
-    if (sitemapUrl && !urls.includes(sitemapUrl)) {
-      nestedSitemaps.push(sitemapUrl);
+  // If this is a sitemap index, we need to fetch and parse child sitemaps
+  // For now, filter out sitemap references and return page URLs only
+  const pageUrls = urls.filter((url) => {
+    try {
+      const urlObj = new URL(url);
+      const pathname = urlObj.pathname.toLowerCase();
+
+      // Check if it's a sitemap index or nested sitemap
+      if (pathname.includes('sitemap') && pathname.endsWith('.xml')) {
+        console.log(`[Discovery] ❌ Filtered sitemap reference: ${url}`);
+        return false;
+      }
+
+      // Filter out media and document files
+      const nonPageExtensions = ['.xml', '.xsl', '.rss', '.atom', '.pdf',
+                                  '.jpg', '.jpeg', '.png', '.gif', '.svg',
+                                  '.mp4', '.mp3', '.zip', '.css', '.js'];
+
+      for (const ext of nonPageExtensions) {
+        if (pathname.endsWith(ext)) {
+          console.log(`[Discovery] ❌ Filtered ${ext} file: ${url}`);
+          return false;
+        }
+      }
+
+      // It's a valid page URL
+      console.log(`[Discovery] ✅ Valid page: ${url}`);
+      return true;
+    } catch (e) {
+      console.log(`[Discovery] ❌ Invalid URL: ${url}`);
+      return false;
     }
-  }
+  });
 
-  // If we found nested sitemaps but no direct URLs, this is a sitemap index
-  if (nestedSitemaps.length > 0 && urls.length === 0) {
-    // Note: In browser context, we can't easily fetch nested sitemaps
-    // This would need to be handled in the extension background worker
-    return nestedSitemaps;
-  }
+  console.log(`[Discovery] After filtering: ${pageUrls.length} scanneable pages`);
 
-  return urls;
+  return pageUrls;
 }
 
 /**
@@ -165,13 +275,14 @@ async function discoverFromRobots(origin: string, timeout: number): Promise<stri
     // Extract sitemap URLs
     const sitemapRegex = /Sitemap:\s*(.+)/gi;
     const sitemaps: string[] = [];
-    let match: RegExpExecArray | null;
+    let match: RegExpExecArray | null = sitemapRegex.exec(text);
 
-    while ((match = sitemapRegex.exec(text)) !== null) {
+    while (match !== null) {
       const sitemapUrl = match[1].trim();
       if (sitemapUrl) {
         sitemaps.push(sitemapUrl);
       }
+      match = sitemapRegex.exec(text);
     }
 
     // Fetch each sitemap
@@ -184,10 +295,7 @@ async function discoverFromRobots(origin: string, timeout: number): Promise<stri
           const urls = parseSitemapXML(xml);
           allUrls.push(...urls);
         }
-      } catch (e) {
-        // Skip failed sitemap
-        continue;
-      }
+      } catch (e) {}
     }
 
     return allUrls;

@@ -18,7 +18,8 @@ export default function HomePage() {
           🔍 Chrome Extension
         </h2>
         <p style={{ color: '#6b7280', marginBottom: '20px' }}>
-          Scan any website directly from your browser for AODA compliance and WCAG 2.0 Level AA violations
+          Scan any website directly from your browser for AODA compliance and WCAG 2.0 Level AA
+          violations
         </p>
         <a
           href="/scan"

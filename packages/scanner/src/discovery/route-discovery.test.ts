@@ -21,9 +21,7 @@ describe('Route Discovery', () => {
 
     it('should handle URLs without fragments or trailing slashes', () => {
       expect(normalizeUrl('https://example.com/page')).toBe('https://example.com/page');
-      expect(normalizeUrl('https://example.com/about/team')).toBe(
-        'https://example.com/about/team'
-      );
+      expect(normalizeUrl('https://example.com/about/team')).toBe('https://example.com/about/team');
     });
 
     it('should preserve query parameters', () => {
@@ -49,9 +47,7 @@ describe('Route Discovery', () => {
     });
 
     it('should handle subdomains', () => {
-      expect(normalizeUrl('https://blog.example.com/post/')).toBe(
-        'https://blog.example.com/post'
-      );
+      expect(normalizeUrl('https://blog.example.com/post/')).toBe('https://blog.example.com/post');
       expect(normalizeUrl('https://www.example.com/#home')).toBe('https://www.example.com/');
     });
 
@@ -65,9 +61,7 @@ describe('Route Discovery', () => {
     });
 
     it('should handle complex paths with trailing slashes and fragments', () => {
-      expect(normalizeUrl('https://example.com/a/b/c/#section')).toBe(
-        'https://example.com/a/b/c'
-      );
+      expect(normalizeUrl('https://example.com/a/b/c/#section')).toBe('https://example.com/a/b/c');
     });
 
     it('should preserve protocol (http vs https)', () => {
@@ -83,9 +77,7 @@ describe('Route Discovery', () => {
 
     it('should handle Ontario government domains', () => {
       expect(normalizeUrl('https://www.ontario.ca/page/')).toBe('https://www.ontario.ca/page');
-      expect(normalizeUrl('https://service.ontario.ca/#main')).toBe(
-        'https://service.ontario.ca/'
-      );
+      expect(normalizeUrl('https://service.ontario.ca/#main')).toBe('https://service.ontario.ca/');
     });
   });
 
@@ -116,9 +108,7 @@ describe('Route Discovery', () => {
       expect(normalizeUrl('https://example.com/document.pdf#page=5')).toBe(
         'https://example.com/document.pdf'
       );
-      expect(normalizeUrl('https://example.com/image.jpg/')).toBe(
-        'https://example.com/image.jpg'
-      );
+      expect(normalizeUrl('https://example.com/image.jpg/')).toBe('https://example.com/image.jpg');
     });
   });
 

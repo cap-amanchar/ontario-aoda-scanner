@@ -15,8 +15,28 @@ interface BilingualCheck {
   languageToggles: number;
 }
 
+interface ViolationNode {
+  html: string;
+  target: string[];
+  failureSummary: string;
+}
+
+interface EnhancedViolation {
+  id: string;
+  impact: 'critical' | 'serious' | 'moderate' | 'minor';
+  description: string;
+  help: string;
+  helpUrl: string;
+  wcagCriterion?: string;
+  aodaSection?: string;
+  penalty?: string;
+  fixTime?: number;
+  affectedUsers?: string[];
+  nodes: ViolationNode[];
+}
+
 interface ScanResponse {
-  violations: any[];
+  violations: EnhancedViolation[];
   passes: number;
   incomplete: number;
   timestamp: string;
@@ -42,12 +62,22 @@ const checkBilingualSupport = (): BilingualCheck => {
   const bodyText = document.body.innerText.toLowerCase();
 
   // French UI keywords
-  const frenchUIWords = ['accueil', 'à propos', 'contactez', 'recherche', 'services', 'politique', 'confidentialité'];
+  const frenchUIWords = [
+    'accueil',
+    'à propos',
+    'contactez',
+    'recherche',
+    'services',
+    'politique',
+    'confidentialité',
+  ];
   const uiWordsFound = frenchUIWords.filter((word) => bodyText.includes(word)).length;
 
   // French structural words
   const frenchStructuralWords = ['bienvenue', 'français', 'langue'];
-  const structuralWordsFound = frenchStructuralWords.filter((word) => bodyText.includes(word)).length;
+  const structuralWordsFound = frenchStructuralWords.filter((word) =>
+    bodyText.includes(word)
+  ).length;
 
   // Require multiple keywords (at least 3 UI words OR 2+ structural words)
   const hasFrenchContent = uiWordsFound >= 3 || structuralWordsFound >= 2;
@@ -56,12 +86,12 @@ const checkBilingualSupport = (): BilingualCheck => {
   const elementsWithLang = document.querySelectorAll('[lang]');
   const languages = new Set<string>();
 
-  elementsWithLang.forEach((el) => {
+  for (const el of elementsWithLang) {
     const lang = el.getAttribute('lang');
     if (lang) {
       languages.add(lang.substring(0, 2).toLowerCase());
     }
-  });
+  }
 
   // Check if it's an Ontario government site
   const isOntarioGov =
@@ -75,7 +105,8 @@ const checkBilingualSupport = (): BilingualCheck => {
   const hasFrench = languages.has('fr');
 
   // PRIMARY: Both lang attributes present
-  const isBilingual = (hasEnglish && hasFrench) ||
+  const isBilingual =
+    (hasEnglish && hasFrench) ||
     // SECONDARY: Government sites with toggle AND substantial French content
     (isOntarioGov && languageToggles.length > 0 && hasFrenchContent);
 
@@ -129,8 +160,8 @@ const runAccessibilityScan = async (): Promise<ScanResponse> => {
           target: Array.isArray(node.target)
             ? node.target.map(String)
             : typeof node.target === 'string'
-            ? [node.target]
-            : [JSON.stringify(node.target)],
+              ? [node.target]
+              : [JSON.stringify(node.target)],
           failureSummary: node.failureSummary || '',
         })),
       };
@@ -177,6 +208,12 @@ const runAccessibilityScan = async (): Promise<ScanResponse> => {
 // ============================================
 
 chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+  if (request.action === 'ping') {
+    // Respond to ping to confirm content script is loaded
+    sendResponse({ ready: true });
+    return false;
+  }
+
   if (request.action === 'scan') {
     runAccessibilityScan()
       .then(sendResponse)
@@ -193,6 +230,8 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
       });
     return true; // Keep message channel open for async response
   }
+
+  return false;
 });
 
 // ============================================

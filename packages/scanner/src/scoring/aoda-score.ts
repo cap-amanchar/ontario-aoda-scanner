@@ -9,29 +9,29 @@ import type { ImpactLevel } from '../types';
 
 // Impact weights based on Ontario AODA penalties
 const IMPACT_WEIGHTS: Record<ImpactLevel, number> = {
-  critical: 20,   // Up to $100,000/day penalties
-  serious: 10,    // Significant compliance risk
-  moderate: 5,    // Important but lower priority
-  minor: 2,       // Nice-to-have improvements
+  critical: 20, // Up to $100,000/day penalties
+  serious: 10, // Significant compliance risk
+  moderate: 5, // Important but lower priority
+  minor: 2, // Nice-to-have improvements
 };
 
 // Grade thresholds
 const GRADE_THRESHOLDS = {
   'A+': 95,
-  'A': 90,
+  A: 90,
   'B+': 85,
-  'B': 80,
+  B: 80,
   'C+': 75,
-  'C': 70,
-  'D': 60,
-  'F': 0,
+  C: 70,
+  D: 60,
+  F: 0,
 } as const;
 
 export type Grade = keyof typeof GRADE_THRESHOLDS;
 
 export interface ScanScore {
-  score: number;           // 0-100
-  grade: Grade;           // A+ to F
+  score: number; // 0-100
+  grade: Grade; // A+ to F
   maxPossibleScore: number;
   deductions: {
     critical: number;
@@ -147,13 +147,13 @@ export function getGrade(score: number): Grade {
 export function getGradeColor(grade: Grade): string {
   const colors: Record<Grade, string> = {
     'A+': '#10b981', // green
-    'A': '#10b981',
+    A: '#10b981',
     'B+': '#3b82f6', // blue
-    'B': '#3b82f6',
+    B: '#3b82f6',
     'C+': '#f59e0b', // amber
-    'C': '#f59e0b',
-    'D': '#f97316',  // orange
-    'F': '#ef4444',  // red
+    C: '#f59e0b',
+    D: '#f97316', // orange
+    F: '#ef4444', // red
   };
   return colors[grade];
 }
@@ -164,13 +164,13 @@ export function getGradeColor(grade: Grade): string {
 export function getGradeDescription(grade: Grade): string {
   const descriptions: Record<Grade, string> = {
     'A+': 'Exceptional - Ready for compliance certification',
-    'A': 'Excellent - Minor improvements only',
+    A: 'Excellent - Minor improvements only',
     'B+': 'Very Good - Few issues to address',
-    'B': 'Good - Some violations need fixing',
+    B: 'Good - Some violations need fixing',
     'C+': 'Fair - Multiple issues present',
-    'C': 'Fair - Significant violations',
-    'D': 'Poor - Major accessibility barriers',
-    'F': 'Failing - Critical issues blocking users',
+    C: 'Fair - Significant violations',
+    D: 'Poor - Major accessibility barriers',
+    F: 'Failing - Critical issues blocking users',
   };
   return descriptions[grade];
 }

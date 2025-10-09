@@ -29,7 +29,7 @@ interface ViolationModalProps {
 
 const ViolationModal: React.FC<ViolationModalProps> = ({ violation, onClose }) => {
   const { t } = useTranslation();
-  const modalRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     // Focus modal when opened
@@ -48,13 +48,28 @@ const ViolationModal: React.FC<ViolationModalProps> = ({ violation, onClose }) =
     return () => window.removeEventListener('keydown', handleEscape);
   }, [onClose]);
 
+  const handleOverlayClick = (e: React.MouseEvent | React.KeyboardEvent) => {
+    if (
+      e.type === 'click' ||
+      (e as React.KeyboardEvent).key === 'Enter' ||
+      (e as React.KeyboardEvent).key === ' '
+    ) {
+      onClose();
+    }
+  };
+
+  const handleContentClick = (e: React.MouseEvent | React.KeyboardEvent) => {
+    e.stopPropagation();
+  };
+
   return (
-    <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
-      <div
+    <div className="modal-overlay" onClick={handleOverlayClick} onKeyDown={handleOverlayClick}>
+      <dialog
         ref={modalRef}
         className="modal-content"
-        onClick={(e) => e.stopPropagation()}
-        tabIndex={-1}
+        onClick={handleContentClick}
+        onKeyDown={handleContentClick}
+        open
         aria-labelledby="modal-title"
       >
         <div className="modal-header">
@@ -106,10 +121,10 @@ const ViolationModal: React.FC<ViolationModalProps> = ({ violation, onClose }) =
           {t('learnMore')} →
         </a>
 
-        <button onClick={onClose} className="modal-close-button">
+        <button type="button" onClick={onClose} className="modal-close-button">
           {t('close')}
         </button>
-      </div>
+      </dialog>
     </div>
   );
 };

@@ -361,7 +361,8 @@ describe('Bilingual Detection', () => {
       const options: BilingualDetectionOptions = {
         htmlLang: 'en',
         hostname: 'www.ontario.ca',
-        bodyText: "Ontario government services - Services du gouvernement de l'Ontario - Accueil Recherche Contactez Français",
+        bodyText:
+          "Ontario government services - Services du gouvernement de l'Ontario - Accueil Recherche Contactez Français",
         languageToggleElements: 1,
         elementsWithLang: [{ lang: 'en' }, { lang: 'en-CA' }, { lang: 'fr' }, { lang: 'fr-CA' }],
       };

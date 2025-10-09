@@ -11,10 +11,16 @@ export type Language = 'en' | 'fr';
 
 const STORAGE_KEY = 'moderna11y_language';
 
+// Message structure from Chrome extension i18n
+interface LocaleMessage {
+  message: string;
+  description?: string;
+}
+
 // Load locale files
-const locales: Record<Language, Record<string, any>> = {
-  en: enMessages,
-  fr: frMessages,
+const locales: Record<Language, Record<string, LocaleMessage>> = {
+  en: enMessages as Record<string, LocaleMessage>,
+  fr: frMessages as Record<string, LocaleMessage>,
 };
 
 /**
@@ -45,7 +51,11 @@ export async function setLanguage(lang: Language): Promise<void> {
 /**
  * Get translated message
  */
-export function getMessage(key: string, substitutions?: string | string[], lang?: Language): string {
+export function getMessage(
+  key: string,
+  substitutions?: string | string[],
+  lang?: Language
+): string {
   const currentLang = lang || 'en';
   const message = locales[currentLang]?.[key]?.message;
 
@@ -59,13 +69,15 @@ export function getMessage(key: string, substitutions?: string | string[], lang?
 
   // Handle substitutions
   const subs = Array.isArray(substitutions) ? substitutions : [substitutions];
-  return message.replace(/\{(\w+)\}/g, (match: string, placeholder: string) => {
-    const index = parseInt(placeholder) - 1;
-    return subs[index] || match;
-  }).replace(/\$(\d+)/g, (match: string, num: string) => {
-    const index = parseInt(num) - 1;
-    return subs[index] || match;
-  });
+  return message
+    .replace(/\{(\w+)\}/g, (match: string, placeholder: string) => {
+      const index = Number.parseInt(placeholder) - 1;
+      return subs[index] || match;
+    })
+    .replace(/\$(\d+)/g, (match: string, num: string) => {
+      const index = Number.parseInt(num) - 1;
+      return subs[index] || match;
+    });
 }
 
 /**
@@ -92,9 +104,12 @@ export function useTranslation() {
     };
   }, []);
 
-  const t = useCallback((key: string, substitutions?: string | string[]): string => {
-    return getMessage(key, substitutions, language);
-  }, [language]);
+  const t = useCallback(
+    (key: string, substitutions?: string | string[]): string => {
+      return getMessage(key, substitutions, language);
+    },
+    [language]
+  );
 
   const changeLanguage = useCallback(async (lang: Language) => {
     await setLanguage(lang);

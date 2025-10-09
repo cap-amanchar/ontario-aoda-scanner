@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import type { ImpactLevel } from '../types';
 import {
   calculateEstimatedFixTime,
   calculateScore,
@@ -8,7 +9,6 @@ import {
   getNextMilestone,
   isCompliant,
 } from './aoda-score';
-import type { ImpactLevel } from '../types';
 
 describe('AODA Scoring System', () => {
   describe('calculateScore', () => {

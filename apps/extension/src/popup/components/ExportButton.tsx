@@ -2,10 +2,30 @@ import type React from 'react';
 import { useCallback } from 'react';
 import { useTranslation } from '../../utils/i18n';
 
+interface ViolationNode {
+  html: string;
+  target: string[];
+  failureSummary: string;
+}
+
+interface EnhancedViolation {
+  id: string;
+  impact: 'critical' | 'serious' | 'moderate' | 'minor';
+  description: string;
+  help: string;
+  helpUrl: string;
+  wcagCriterion?: string;
+  aodaSection?: string;
+  penalty?: string;
+  fixTime?: number;
+  affectedUsers?: string[];
+  nodes: ViolationNode[];
+}
+
 interface ScanResult {
   url: string;
   timestamp: string;
-  violations: any[];
+  violations: EnhancedViolation[];
   passes: number;
   incomplete: number;
   bilingualCheck?: {
@@ -16,8 +36,19 @@ interface ScanResult {
   score?: {
     score: number;
     grade: string;
-    deductions: any;
-    breakdown: any;
+    deductions: {
+      critical: number;
+      serious: number;
+      moderate: number;
+      minor: number;
+      total: number;
+    };
+    breakdown: {
+      passedChecks: number;
+      totalChecks: number;
+      violationCount: number;
+      elementCount: number;
+    };
   };
 }
 
@@ -36,7 +67,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({ result }) => {
         '<': '&lt;',
         '>': '&gt;',
         '"': '&quot;',
-        "'": '&#039;'
+        "'": '&#039;',
       };
       return text.replace(/[&<>"']/g, (m) => map[m]);
     };
@@ -231,9 +262,9 @@ const ExportButton: React.FC<ExportButtonProps> = ({ result }) => {
 
   <!-- Header -->
   <div class="header">
-    <h1>🇨🇦 ComplyCA - AODA Compliance Report</h1>
+    <h1>ComplyCA - AODA Compliance Report</h1>
     <div class="subtitle">Ontario AODA Scanner</div>
-    <div class="branding">Developed by Nizar Amanchar for Canada ❤️</div>
+    <div class="branding">Made with ❤️ by Nizar Amanchar for small business owners</div>
   </div>
 
   <!-- Score Card -->
@@ -266,12 +297,16 @@ const ExportButton: React.FC<ExportButtonProps> = ({ result }) => {
         <div class="info-value">${isBilingual ? '✅ Yes' : '❌ No'}</div>
       </div>
     </div>
-    ${detectedLanguages.length > 0 ? `
+    ${
+      detectedLanguages.length > 0
+        ? `
     <div style="margin-top: 12px; padding: 12px; background: #f3f4f6; border-radius: 6px;">
       <strong style="font-size: 12px; color: #6b7280;">Detected Languages:</strong>
       <span style="font-size: 14px; color: #1f2937;">${detectedLanguages.join(', ').toUpperCase()}</span>
     </div>
-    ` : ''}
+    `
+        : ''
+    }
     <div style="margin-top: 12px; padding: 12px; background: #f3f4f6; border-radius: 6px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
       <div>
         <div style="font-size: 11px; color: #6b7280; text-transform: uppercase;">Violations</div>
@@ -314,23 +349,25 @@ const ExportButton: React.FC<ExportButtonProps> = ({ result }) => {
   <!-- Violations Section -->
   <div class="section">
     <h2 class="section-title">📋 Accessibility Violations (${totalViolations})</h2>
-  ${totalViolations === 0 ? `
+  ${
+    totalViolations === 0
+      ? `
     <div style="text-align: center; padding: 40px 20px; background: #d1fae5; border-radius: 12px; color: #065f46;">
       <div style="font-size: 48px; margin-bottom: 16px;">✨</div>
       <h3 style="font-size: 24px; margin-bottom: 8px;">Perfect! No Issues Found</h3>
       <p style="font-size: 16px;">This page meets WCAG 2.0 Level AA accessibility standards.</p>
     </div>
-  ` : result.violations
-    .map(
-      (v) => `
+  `
+      : result.violations
+          .map(
+            (v) => `
     <div class="violation ${v.impact || 'minor'}">
       <h3>${escapeHtml(v.description || 'Unknown violation')}</h3>
       <div class="violation-meta">
         <span><strong>Impact:</strong> ${(v.impact || 'unknown').toUpperCase()}</span>
         ${v.wcagCriterion ? `<span><strong>WCAG:</strong> ${escapeHtml(v.wcagCriterion)}</span>` : ''}
         ${v.aodaSection ? `<span><strong>AODA:</strong> ${escapeHtml(v.aodaSection)}</span>` : ''}
-        <span><strong>Elements:</strong> ${(v.nodes && v.nodes.length) || 0}</span>
-        ${v.fixTime ? `<span><strong>Fix Time:</strong> ~${v.fixTime} min</span>` : ''}
+        <span><strong>Elements:</strong> ${v.nodes?.length || 0}</span>
       </div>
       ${v.penalty ? `<p style="color: #dc2626; font-weight: 600;">⚠️ ${escapeHtml(v.penalty)}</p>` : ''}
       <p><strong>How to fix:</strong> ${escapeHtml(v.help || 'No guidance available')}</p>
@@ -338,13 +375,14 @@ const ExportButton: React.FC<ExportButtonProps> = ({ result }) => {
       ${v.helpUrl ? `<p><a href="${escapeHtml(v.helpUrl)}" target="_blank" style="color: #2563eb; text-decoration: none;">📚 Learn More →</a></p>` : ''}
     </div>
   `
-    )
-    .join('')}
+          )
+          .join('')
+  }
   </div>
 
   <!-- Footer -->
   <div class="footer">
-    <p><strong>Made with ❤️ by Nizar Amanchar for Canada 🇨🇦</strong></p>
+    <p><strong>Made with ❤️ by Nizar Amanchar for Canada</strong></p>
     <p style="opacity: 0.8; margin-top: 8px;">ComplyCA - Making the web accessible for everyone</p>
     <p style="opacity: 0.7; margin-top: 8px; font-size: 11px;">
       Report generated on ${new Date().toLocaleString()} •

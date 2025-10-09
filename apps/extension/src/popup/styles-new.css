@@ -2,39 +2,39 @@
 
 :root {
   /* Ontario Government Colors */
-  --ontario-blue: #0066CC;
-  --ontario-blue-dark: #005AB5;
-  --ontario-blue-light: #E0F2FE;
-  --ontario-navy: #1E3A8A;
+  --ontario-blue: #0066cc;
+  --ontario-blue-dark: #005ab5;
+  --ontario-blue-light: #e0f2fe;
+  --ontario-navy: #1e3a8a;
 
   /* Semantic Colors */
-  --critical: #DC2626;
-  --critical-bg: #FEF2F2;
-  --serious: #EA580C;
-  --serious-bg: #FFF7ED;
-  --moderate: #D97706;
-  --moderate-bg: #FFFBEB;
-  --minor: #0891B2;
-  --minor-bg: #ECFEFF;
+  --critical: #dc2626;
+  --critical-bg: #fef2f2;
+  --serious: #ea580c;
+  --serious-bg: #fff7ed;
+  --moderate: #d97706;
+  --moderate-bg: #fffbeb;
+  --minor: #0891b2;
+  --minor-bg: #ecfeff;
 
   /* Neutral Colors */
-  --gray-50: #F9FAFB;
-  --gray-100: #F3F4F6;
-  --gray-200: #E5E7EB;
-  --gray-300: #D1D5DB;
-  --gray-400: #9CA3AF;
-  --gray-500: #6B7280;
-  --gray-600: #4B5563;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
   --gray-700: #374151;
-  --gray-800: #1F2937;
+  --gray-800: #1f2937;
   --gray-900: #111827;
 
   /* UI Colors */
-  --bg-primary: #FFFFFF;
-  --bg-secondary: #F9FAFB;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
   --text-primary: #111827;
-  --text-secondary: #6B7280;
-  --border: #E5E7EB;
+  --text-secondary: #6b7280;
+  --border: #e5e7eb;
 
   /* Effects */
   --radius-sm: 8px;
@@ -47,13 +47,13 @@
 
 .dark-mode {
   --bg-primary: #111827;
-  --bg-secondary: #1F2937;
-  --text-primary: #F9FAFB;
-  --text-secondary: #9CA3AF;
+  --bg-secondary: #1f2937;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
   --border: #374151;
-  --gray-50: #1F2937;
+  --gray-50: #1f2937;
   --gray-100: #374151;
-  --ontario-blue-light: #1E3A8A;
+  --ontario-blue-light: #1e3a8a;
 }
 
 * {
@@ -212,7 +212,9 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Bento Grid - Score Card */
@@ -353,7 +355,7 @@ body {
 }
 
 .bilingual-bento.compliant {
-  border-left: 3px solid #10B981;
+  border-left: 3px solid #10b981;
 }
 
 .bilingual-bento.non-compliant {
@@ -537,7 +539,7 @@ body {
 .empty-state h3 {
   font-size: 18px;
   font-weight: 600;
-  color: #10B981;
+  color: #10b981;
   margin-bottom: 8px;
 }
 
@@ -704,7 +706,7 @@ body {
 .progress-url {
   font-size: 12px;
   color: var(--text-secondary);
-  font-family: 'SF Mono', Monaco, monospace;
+  font-family: "SF Mono", Monaco, monospace;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -744,11 +746,15 @@ body {
 
 /* Smooth transitions */
 * {
-  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow,
+    transform;
   transition-duration: 200ms;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-button, .scan-button, .filter-tab, .violation {
+button,
+.scan-button,
+.filter-tab,
+.violation {
   transition-property: all;
 }
