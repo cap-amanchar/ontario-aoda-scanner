@@ -1,11 +1,17 @@
-import { describe, it, expect } from 'vitest';
-import { AODA_RULES_MAP, getAODAMapping, isOntarioCritical } from './aoda-rules';
+import { describe, expect, it } from 'vitest';
 import type { ImpactLevel } from '../types';
+import { AODA_RULES_MAP, getAODAMapping, isOntarioCritical } from './aoda-rules';
 
 describe('AODA Rules Mapping', () => {
   describe('AODA_RULES_MAP', () => {
     it('should contain all expected critical rules', () => {
-      const criticalRules = ['color-contrast', 'html-has-lang', 'image-alt', 'button-name', 'label'];
+      const criticalRules = [
+        'color-contrast',
+        'html-has-lang',
+        'image-alt',
+        'button-name',
+        'label',
+      ];
 
       for (const ruleId of criticalRules) {
         expect(AODA_RULES_MAP[ruleId]).toBeDefined();
@@ -16,7 +22,7 @@ describe('AODA Rules Mapping', () => {
     it('should have valid WCAG levels for all rules', () => {
       const validLevels = ['A', 'AA', 'AAA'];
 
-      for (const [ruleId, rule] of Object.entries(AODA_RULES_MAP)) {
+      for (const [_ruleId, rule] of Object.entries(AODA_RULES_MAP)) {
         expect(validLevels).toContain(rule.wcagLevel);
       }
     });
@@ -24,41 +30,41 @@ describe('AODA Rules Mapping', () => {
     it('should have valid impact levels for all rules', () => {
       const validImpacts: ImpactLevel[] = ['critical', 'serious', 'moderate', 'minor'];
 
-      for (const [ruleId, rule] of Object.entries(AODA_RULES_MAP)) {
+      for (const [_ruleId, rule] of Object.entries(AODA_RULES_MAP)) {
         expect(validImpacts).toContain(rule.impact);
       }
     });
 
     it('should have non-empty WCAG criterion for all rules', () => {
-      for (const [ruleId, rule] of Object.entries(AODA_RULES_MAP)) {
+      for (const [_ruleId, rule] of Object.entries(AODA_RULES_MAP)) {
         expect(rule.wcagCriterion).toBeTruthy();
         expect(rule.wcagCriterion.length).toBeGreaterThan(0);
       }
     });
 
     it('should have AODA section reference for all rules', () => {
-      for (const [ruleId, rule] of Object.entries(AODA_RULES_MAP)) {
+      for (const [_ruleId, rule] of Object.entries(AODA_RULES_MAP)) {
         expect(rule.aodaSection).toBeTruthy();
         expect(rule.aodaSection).toContain('IASR');
       }
     });
 
     it('should have at least one affected user group for all rules', () => {
-      for (const [ruleId, rule] of Object.entries(AODA_RULES_MAP)) {
+      for (const [_ruleId, rule] of Object.entries(AODA_RULES_MAP)) {
         expect(rule.affectedUsers).toBeDefined();
         expect(rule.affectedUsers.length).toBeGreaterThan(0);
       }
     });
 
     it('should have realistic estimated fix times', () => {
-      for (const [ruleId, rule] of Object.entries(AODA_RULES_MAP)) {
+      for (const [_ruleId, rule] of Object.entries(AODA_RULES_MAP)) {
         expect(rule.estimatedFixTime).toBeGreaterThan(0);
         expect(rule.estimatedFixTime).toBeLessThanOrEqual(120); // Max 2 hours is reasonable
       }
     });
 
     it('should have penalty information for all rules', () => {
-      for (const [ruleId, rule] of Object.entries(AODA_RULES_MAP)) {
+      for (const [_ruleId, rule] of Object.entries(AODA_RULES_MAP)) {
         expect(rule.penalty).toBeTruthy();
         expect(rule.penalty.length).toBeGreaterThan(0);
       }
@@ -161,8 +167,9 @@ describe('AODA Rules Mapping', () => {
 
   describe('WCAG Level A compliance', () => {
     it('should include all Level A critical rules', () => {
-      const levelARules = Object.entries(AODA_RULES_MAP)
-        .filter(([_, rule]) => rule.wcagLevel === 'A');
+      const levelARules = Object.entries(AODA_RULES_MAP).filter(
+        ([_, rule]) => rule.wcagLevel === 'A'
+      );
 
       expect(levelARules.length).toBeGreaterThan(0);
 
@@ -176,8 +183,9 @@ describe('AODA Rules Mapping', () => {
 
   describe('WCAG Level AA compliance', () => {
     it('should include all Level AA critical rules', () => {
-      const levelAARules = Object.entries(AODA_RULES_MAP)
-        .filter(([_, rule]) => rule.wcagLevel === 'AA');
+      const levelAARules = Object.entries(AODA_RULES_MAP).filter(
+        ([_, rule]) => rule.wcagLevel === 'AA'
+      );
 
       expect(levelAARules.length).toBeGreaterThan(0);
 
@@ -190,10 +198,9 @@ describe('AODA Rules Mapping', () => {
 
   describe('Affected user groups', () => {
     it('should identify screen reader user impacts', () => {
-      const screenReaderRules = Object.entries(AODA_RULES_MAP)
-        .filter(([_, rule]) => rule.affectedUsers.some(user =>
-          user.toLowerCase().includes('screen reader')
-        ));
+      const screenReaderRules = Object.entries(AODA_RULES_MAP).filter(([_, rule]) =>
+        rule.affectedUsers.some((user) => user.toLowerCase().includes('screen reader'))
+      );
 
       expect(screenReaderRules.length).toBeGreaterThan(0);
       expect(screenReaderRules.map(([id]) => id)).toContain('image-alt');
@@ -201,20 +208,18 @@ describe('AODA Rules Mapping', () => {
     });
 
     it('should identify keyboard-only user impacts', () => {
-      const keyboardRules = Object.entries(AODA_RULES_MAP)
-        .filter(([_, rule]) => rule.affectedUsers.some(user =>
-          user.toLowerCase().includes('keyboard')
-        ));
+      const keyboardRules = Object.entries(AODA_RULES_MAP).filter(([_, rule]) =>
+        rule.affectedUsers.some((user) => user.toLowerCase().includes('keyboard'))
+      );
 
       expect(keyboardRules.length).toBeGreaterThan(0);
       expect(keyboardRules.map(([id]) => id)).toContain('button-name');
     });
 
     it('should identify low vision user impacts', () => {
-      const lowVisionRules = Object.entries(AODA_RULES_MAP)
-        .filter(([_, rule]) => rule.affectedUsers.some(user =>
-          user.toLowerCase().includes('low vision')
-        ));
+      const lowVisionRules = Object.entries(AODA_RULES_MAP).filter(([_, rule]) =>
+        rule.affectedUsers.some((user) => user.toLowerCase().includes('low vision'))
+      );
 
       expect(lowVisionRules.length).toBeGreaterThan(0);
       expect(lowVisionRules.map(([id]) => id)).toContain('color-contrast');
@@ -233,8 +238,8 @@ describe('AODA Rules Mapping', () => {
     });
 
     it('should have IASR section references', () => {
-      const allRulesHaveIASR = Object.values(AODA_RULES_MAP).every(
-        rule => rule.aodaSection.includes('IASR')
+      const allRulesHaveIASR = Object.values(AODA_RULES_MAP).every((rule) =>
+        rule.aodaSection.includes('IASR')
       );
       expect(allRulesHaveIASR).toBe(true);
     });
@@ -242,8 +247,9 @@ describe('AODA Rules Mapping', () => {
 
   describe('Estimated fix times', () => {
     it('should have quick fixes (under 10 minutes) for simple issues', () => {
-      const quickFixes = Object.entries(AODA_RULES_MAP)
-        .filter(([_, rule]) => rule.estimatedFixTime < 10);
+      const quickFixes = Object.entries(AODA_RULES_MAP).filter(
+        ([_, rule]) => rule.estimatedFixTime < 10
+      );
 
       expect(quickFixes.length).toBeGreaterThan(0);
       expect(quickFixes.map(([id]) => id)).toContain('html-has-lang'); // 5 min
@@ -251,8 +257,9 @@ describe('AODA Rules Mapping', () => {
     });
 
     it('should have longer fix times for complex issues', () => {
-      const complexFixes = Object.entries(AODA_RULES_MAP)
-        .filter(([_, rule]) => rule.estimatedFixTime >= 30);
+      const complexFixes = Object.entries(AODA_RULES_MAP).filter(
+        ([_, rule]) => rule.estimatedFixTime >= 30
+      );
 
       expect(complexFixes.length).toBeGreaterThan(0);
       expect(complexFixes.map(([id]) => id)).toContain('focus-order-semantics'); // 45 min
@@ -261,26 +268,22 @@ describe('AODA Rules Mapping', () => {
 
   describe('Impact level distribution', () => {
     it('should have multiple critical violations', () => {
-      const critical = Object.values(AODA_RULES_MAP)
-        .filter(rule => rule.impact === 'critical');
+      const critical = Object.values(AODA_RULES_MAP).filter((rule) => rule.impact === 'critical');
       expect(critical.length).toBeGreaterThanOrEqual(5);
     });
 
     it('should have serious violations', () => {
-      const serious = Object.values(AODA_RULES_MAP)
-        .filter(rule => rule.impact === 'serious');
+      const serious = Object.values(AODA_RULES_MAP).filter((rule) => rule.impact === 'serious');
       expect(serious.length).toBeGreaterThan(0);
     });
 
     it('should have moderate violations', () => {
-      const moderate = Object.values(AODA_RULES_MAP)
-        .filter(rule => rule.impact === 'moderate');
+      const moderate = Object.values(AODA_RULES_MAP).filter((rule) => rule.impact === 'moderate');
       expect(moderate.length).toBeGreaterThan(0);
     });
 
     it('should have minor violations', () => {
-      const minor = Object.values(AODA_RULES_MAP)
-        .filter(rule => rule.impact === 'minor');
+      const minor = Object.values(AODA_RULES_MAP).filter((rule) => rule.impact === 'minor');
       expect(minor.length).toBeGreaterThan(0);
     });
   });

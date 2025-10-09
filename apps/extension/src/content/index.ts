@@ -1,5 +1,5 @@
+import { type ScanScore, calculateScore, getAODAMapping } from '@moderna11y/scanner';
 import axe from 'axe-core';
-import { AODA_RULES_MAP, getAODAMapping } from '@moderna11y/scanner';
 
 // ============================================
 // TYPES
@@ -21,6 +21,7 @@ interface ScanResponse {
   incomplete: number;
   timestamp: string;
   bilingualCheck: BilingualCheck;
+  score?: ScanScore;
   error?: string;
 }
 
@@ -32,15 +33,24 @@ const checkBilingualSupport = (): BilingualCheck => {
   const htmlLang = document.documentElement.lang;
   const hasLangAttribute = !!htmlLang;
 
-  // Check for language toggles
+  // Check for language toggles (more specific patterns to avoid false matches)
   const languageToggles = document.querySelectorAll(
-    'a[href*="lang"], a[href*="/fr"], a[href*="/en"], button[aria-label*="French"], button[aria-label*="Français"], [class*="lang-toggle"], [id*="lang-toggle"]'
+    'a[href$="/fr"], a[href$="/en"], a[href*="/fr/"], a[href*="/en/"], button[aria-label*="French"], button[aria-label*="Français"], button[aria-label*="English"], [class*="language-toggle"], [id*="language-toggle"], [data-lang]'
   );
 
-  // Check for French content
+  // Check for substantial French content (requires multiple keywords)
   const bodyText = document.body.innerText.toLowerCase();
-  const frenchWords = ['français', 'bonjour', 'accueil', 'contactez', 'recherche', 'services'];
-  const hasFrenchContent = frenchWords.some((word) => bodyText.includes(word));
+
+  // French UI keywords
+  const frenchUIWords = ['accueil', 'à propos', 'contactez', 'recherche', 'services', 'politique', 'confidentialité'];
+  const uiWordsFound = frenchUIWords.filter((word) => bodyText.includes(word)).length;
+
+  // French structural words
+  const frenchStructuralWords = ['bienvenue', 'français', 'langue'];
+  const structuralWordsFound = frenchStructuralWords.filter((word) => bodyText.includes(word)).length;
+
+  // Require multiple keywords (at least 3 UI words OR 2+ structural words)
+  const hasFrenchContent = uiWordsFound >= 3 || structuralWordsFound >= 2;
 
   // Check for multiple lang attributes
   const elementsWithLang = document.querySelectorAll('[lang]');
@@ -53,16 +63,21 @@ const checkBilingualSupport = (): BilingualCheck => {
     }
   });
 
-  const isBilingual =
-    (languages.has('en') && languages.has('fr')) ||
-    (languageToggles.length > 0 && hasFrenchContent);
-
   // Check if it's an Ontario government site
   const isOntarioGov =
     window.location.hostname.includes('ontario.ca') ||
     window.location.hostname.includes('.on.ca') ||
     window.location.hostname.includes('.gc.ca') ||
     window.location.hostname.includes('.gouv.qc.ca');
+
+  // Strict bilingual detection
+  const hasEnglish = languages.has('en');
+  const hasFrench = languages.has('fr');
+
+  // PRIMARY: Both lang attributes present
+  const isBilingual = (hasEnglish && hasFrench) ||
+    // SECONDARY: Government sites with toggle AND substantial French content
+    (isOntarioGov && languageToggles.length > 0 && hasFrenchContent);
 
   return {
     hasLangAttribute,
@@ -108,9 +123,19 @@ const runAccessibilityScan = async (): Promise<ScanResponse> => {
       };
     });
 
+    // Calculate AODA score
+    const scoreData = calculateScore({
+      violations: enhancedViolations,
+      passes: results.passes.length,
+      incomplete: results.incomplete.length,
+      bilingualCheck,
+    });
+
     console.log('✅ Scan complete:', {
       violations: enhancedViolations.length,
       bilingual: bilingualCheck.isBilingual,
+      score: scoreData.score,
+      grade: scoreData.grade,
     });
 
     return {
@@ -119,6 +144,7 @@ const runAccessibilityScan = async (): Promise<ScanResponse> => {
       incomplete: results.incomplete.length,
       timestamp: new Date().toISOString(),
       bilingualCheck,
+      score: scoreData,
     };
   } catch (error) {
     console.error('❌ Scan failed:', error);
@@ -137,7 +163,7 @@ const runAccessibilityScan = async (): Promise<ScanResponse> => {
 // MESSAGE LISTENER
 // ============================================
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   if (request.action === 'scan') {
     runAccessibilityScan()
       .then(sendResponse)
@@ -166,7 +192,7 @@ const showIndicator = () => {
   indicator.innerHTML = `
     <div style="display: flex; align-items: center; gap: 8px;">
       <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite;"></div>
-      <span>ModernA11y Active</span>
+      <span>ComplyCA Active</span>
     </div>
     <style>
       @keyframes pulse {
@@ -208,4 +234,4 @@ if (document.readyState === 'loading') {
   showIndicator();
 }
 
-console.log('🚀 ModernA11y content script loaded - Ready to scan');
+console.log('🚀 ComplyCA content script loaded - Ready to scan');

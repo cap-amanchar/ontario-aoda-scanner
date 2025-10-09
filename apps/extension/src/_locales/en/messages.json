@@ -1,0 +1,290 @@
+{
+  "extensionName": {
+    "message": "ComplyCA AODA Scanner",
+    "description": "Name of the extension"
+  },
+  "extensionDescription": {
+    "message": "Scan websites for AODA compliance and WCAG 2.0 Level AA violations",
+    "description": "Description of the extension"
+  },
+  "appTitle": {
+    "message": "ComplyCA",
+    "description": "Application title"
+  },
+  "appSubtitle": {
+    "message": "Ontario AODA Scanner",
+    "description": "Application subtitle"
+  },
+  "developerCredit": {
+    "message": "Developed by Nizar Amanchar for Canada ❤️",
+    "description": "Developer credit"
+  },
+  "scanButton": {
+    "message": "Scan This Page",
+    "description": "Button to scan current page"
+  },
+  "scanning": {
+    "message": "Scanning...",
+    "description": "Scanning status text"
+  },
+  "fullSiteScan": {
+    "message": "Scan Full Website",
+    "description": "Button to scan entire website"
+  },
+  "scanningWebsite": {
+    "message": "Scanning Website...",
+    "description": "Full site scanning status"
+  },
+  "scoreLabel": {
+    "message": "AODA Compliance Score",
+    "description": "Label for compliance score"
+  },
+  "compliant": {
+    "message": "Compliant",
+    "description": "Compliant status"
+  },
+  "needsImprovement": {
+    "message": "Needs Improvement",
+    "description": "Needs improvement status"
+  },
+  "critical": {
+    "message": "Critical",
+    "description": "Critical severity level"
+  },
+  "serious": {
+    "message": "Serious",
+    "description": "Serious severity level"
+  },
+  "moderate": {
+    "message": "Moderate",
+    "description": "Moderate severity level"
+  },
+  "minor": {
+    "message": "Minor",
+    "description": "Minor severity level"
+  },
+  "results": {
+    "message": "Results",
+    "description": "Results section title"
+  },
+  "allViolations": {
+    "message": "All Violations",
+    "description": "All violations filter"
+  },
+  "violations": {
+    "message": "Violations",
+    "description": "Violations label"
+  },
+  "all": {
+    "message": "All",
+    "description": "All filter option"
+  },
+  "bilingualSupported": {
+    "message": "Bilingual Support Detected",
+    "description": "Bilingual support detected message"
+  },
+  "notBilingual": {
+    "message": "Not Bilingual",
+    "description": "Not bilingual message"
+  },
+  "languages": {
+    "message": "Languages",
+    "description": "Languages label"
+  },
+  "perfectNoIssues": {
+    "message": "Perfect! No Issues Found",
+    "description": "No issues found title"
+  },
+  "perfectMessage": {
+    "message": "This page meets WCAG 2.0 Level AA accessibility standards. Great work!",
+    "description": "Perfect compliance message"
+  },
+  "scanAnother": {
+    "message": "Scan Another Page",
+    "description": "Scan another page button"
+  },
+  "scanFailed": {
+    "message": "Scan Failed",
+    "description": "Scan failed error title"
+  },
+  "retryScan": {
+    "message": "Retry Scan",
+    "description": "Retry scan button"
+  },
+  "dismiss": {
+    "message": "Dismiss",
+    "description": "Dismiss button"
+  },
+  "exportPDF": {
+    "message": "Export PDF",
+    "description": "Export PDF button"
+  },
+  "settings": {
+    "message": "Settings",
+    "description": "Settings button"
+  },
+  "autoScan": {
+    "message": "Auto-scan on load",
+    "description": "Auto scan setting"
+  },
+  "darkMode": {
+    "message": "Dark mode",
+    "description": "Dark mode setting"
+  },
+  "showNotifications": {
+    "message": "Show notifications",
+    "description": "Show notifications setting"
+  },
+  "language": {
+    "message": "Language",
+    "description": "Language setting label"
+  },
+  "english": {
+    "message": "English",
+    "description": "English language option"
+  },
+  "french": {
+    "message": "French",
+    "description": "French language option"
+  },
+  "save": {
+    "message": "Save",
+    "description": "Save button"
+  },
+  "cancel": {
+    "message": "Cancel",
+    "description": "Cancel button"
+  },
+  "close": {
+    "message": "Close",
+    "description": "Close button"
+  },
+  "elements": {
+    "message": "elements",
+    "description": "Elements count"
+  },
+  "element": {
+    "message": "element",
+    "description": "Single element"
+  },
+  "wcagCriterion": {
+    "message": "WCAG Criterion",
+    "description": "WCAG criterion label"
+  },
+  "aodaSection": {
+    "message": "AODA Section",
+    "description": "AODA section label"
+  },
+  "penalty": {
+    "message": "Penalty",
+    "description": "Penalty label"
+  },
+  "affectedUsers": {
+    "message": "Affected Users",
+    "description": "Affected users label"
+  },
+  "estimatedFixTime": {
+    "message": "Estimated Fix Time",
+    "description": "Estimated fix time label"
+  },
+  "minutes": {
+    "message": "minutes",
+    "description": "Minutes unit"
+  },
+  "learnMore": {
+    "message": "Learn More",
+    "description": "Learn more link"
+  },
+  "scanComplete": {
+    "message": "Scan complete. Found {count} violations.",
+    "description": "Scan complete announcement",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+  "scanningAria": {
+    "message": "Scanning page for accessibility issues",
+    "description": "Scanning ARIA label"
+  },
+  "scanButtonAria": {
+    "message": "Scan this page for AODA compliance",
+    "description": "Scan button ARIA label"
+  },
+  "viewDetails": {
+    "message": "View details for {description}",
+    "description": "View details ARIA label",
+    "placeholders": {
+      "description": {
+        "content": "$1",
+        "example": "Missing alt text"
+      }
+    }
+  },
+  "siteScanComplete": {
+    "message": "Site scan complete!\nAverage Score: {score}/100 ({grade})\nPages scanned: {pages}",
+    "description": "Site scan complete message",
+    "placeholders": {
+      "score": {
+        "content": "$1",
+        "example": "85"
+      },
+      "grade": {
+        "content": "$2",
+        "example": "B"
+      },
+      "pages": {
+        "content": "$3",
+        "example": "12"
+      }
+    }
+  },
+  "pagesScanned": {
+    "message": "{current} / {total} pages",
+    "description": "Pages scanned count",
+    "placeholders": {
+      "current": {
+        "content": "$1",
+        "example": "5"
+      },
+      "total": {
+        "content": "$2",
+        "example": "10"
+      }
+    }
+  },
+  "averageScore": {
+    "message": "Average Score",
+    "description": "Average score label"
+  },
+  "complianceRate": {
+    "message": "Compliance Rate",
+    "description": "Compliance rate label"
+  },
+  "topViolations": {
+    "message": "Top Violations",
+    "description": "Top violations label"
+  },
+  "pageResults": {
+    "message": "Page Results",
+    "description": "Page results label"
+  },
+  "pages": {
+    "message": "pages",
+    "description": "Pages label"
+  },
+  "passes": {
+    "message": "passes",
+    "description": "Passes label"
+  },
+  "exportReport": {
+    "message": "Export Report",
+    "description": "Export report button"
+  },
+  "watermark": {
+    "message": "Made with ❤️ by Nizar Amanchar for Canada",
+    "description": "Watermark text"
+  }
+}

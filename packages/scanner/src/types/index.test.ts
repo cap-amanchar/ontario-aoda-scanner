@@ -1,11 +1,11 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
-  WCAGLevel,
-  ImpactLevel,
-  AODAViolationSchema,
-  ScanResultSchema,
   type AODAViolation,
+  AODAViolationSchema,
+  ImpactLevel,
   type ScanResult,
+  ScanResultSchema,
+  WCAGLevel,
 } from './index';
 
 describe('Zod Schema Validators', () => {
@@ -71,7 +71,7 @@ describe('Zod Schema Validators', () => {
 
     it('should reject violation with missing required fields', () => {
       const invalidViolation = { ...validViolation };
-      delete (invalidViolation as any).id;
+      (invalidViolation as any).id = undefined;
 
       expect(() => AODAViolationSchema.parse(invalidViolation)).toThrow();
     });

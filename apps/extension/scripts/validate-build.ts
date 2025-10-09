@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
-import { existsSync, statSync } from 'fs';
-import { join } from 'path';
+import { existsSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 
 interface ValidationResult {
   valid: boolean;
@@ -11,13 +11,7 @@ interface ValidationResult {
 
 const DIST_PATH = join(import.meta.dir, '..', 'dist');
 
-const REQUIRED_FILES = [
-  'manifest.json',
-  'popup.html',
-  'popup.js',
-  'content.js',
-  'background.js',
-];
+const REQUIRED_FILES = ['manifest.json', 'popup.html', 'popup.js', 'content.js', 'background.js'];
 
 const REQUIRED_ICONS = [
   'icons/icon-16.png',
@@ -139,7 +133,7 @@ function formatBytes(bytes: number): string {
 // Run validation
 const result = await validateBuild();
 
-console.log('\n' + '='.repeat(50));
+console.log(`\n${'='.repeat(50)}`);
 
 if (result.warnings.length > 0) {
   console.log('\n⚠️  Warnings:');
@@ -155,7 +149,7 @@ if (result.errors.length > 0) {
   }
 }
 
-console.log('\n' + '='.repeat(50));
+console.log(`\n${'='.repeat(50)}`);
 
 if (result.valid && result.errors.length === 0) {
   console.log('\n✅ Extension build is VALID and ready to load!');

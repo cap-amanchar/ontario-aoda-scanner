@@ -9,7 +9,7 @@
     "build:popup": "bun build src/popup/index.tsx --target=browser --minify --outdir=dist --entry-naming=popup.js",
     "build:content": "bun build src/content/index.ts --outdir=dist --target=browser --minify --entry-naming=content.js",
     "build:background": "bun build src/background/index.ts --outdir=dist --target=browser --minify --entry-naming=background.js",
-    "copy:static": "cp src/popup/index.html dist/popup.html && cp src/popup/styles.css dist/popup.css && cp manifest.json dist/ && mkdir -p dist/icons",
+    "copy:static": "cp src/popup/index.html dist/popup.html && cp src/popup/styles.css dist/popup.css && cp manifest.json dist/ && mkdir -p dist/icons && cp src/icons/canada-flag.png dist/icons/ && cp -r src/_locales dist/",
     "generate:icons": "bun run scripts/generate-icons.ts",
     "validate": "bun run scripts/validate-build.ts",
     "clean": "rm -rf dist && mkdir -p dist",
@@ -24,6 +24,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/bun": "latest",
     "@types/chrome": "^0.0.268",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",

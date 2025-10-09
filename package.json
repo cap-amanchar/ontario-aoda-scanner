@@ -1,12 +1,9 @@
 {
-  "name": "moderna11y",
+  "name": "complyca",
   "version": "0.1.0",
   "private": true,
-  "description": "Ontario AODA Accessibility Scanner - Chrome Extension & Web App",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "description": "ComplyCA - Ontario AODA Compliance Scanner - Chrome Extension & Web App",
+  "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
-import { writeFileSync } from 'fs';
-import { join } from 'path';
+import { writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 // Create a simple colored square PNG for each size
 // This creates a valid PNG with accessibility blue color (#0066CC)
@@ -16,8 +16,8 @@ function createPNG(size: number): Buffer {
   const ihdr = Buffer.alloc(13);
   ihdr.writeUInt32BE(width, 0);
   ihdr.writeUInt32BE(height, 4);
-  ihdr.writeUInt8(8, 8);  // bit depth
-  ihdr.writeUInt8(2, 9);  // color type (RGB)
+  ihdr.writeUInt8(8, 8); // bit depth
+  ihdr.writeUInt8(2, 9); // color type (RGB)
   ihdr.writeUInt8(0, 10); // compression
   ihdr.writeUInt8(0, 11); // filter
   ihdr.writeUInt8(0, 12); // interlace
@@ -38,11 +38,11 @@ function createPNG(size: number): Buffer {
       const isA = isPartOfA(x, y, size);
 
       if (isA) {
-        imageData.writeUInt8(255, offset);     // R
+        imageData.writeUInt8(255, offset); // R
         imageData.writeUInt8(255, offset + 1); // G
         imageData.writeUInt8(255, offset + 2); // B
       } else {
-        imageData.writeUInt8(0, offset);       // R
+        imageData.writeUInt8(0, offset); // R
         imageData.writeUInt8(102, offset + 1); // G
         imageData.writeUInt8(204, offset + 2); // B (#0066CC)
       }
@@ -50,7 +50,7 @@ function createPNG(size: number): Buffer {
   }
 
   // Compress image data (using zlib deflate)
-  const zlib = require('zlib');
+  const zlib = require('node:zlib');
   const compressedData = zlib.deflateSync(imageData);
   const idatChunk = createChunk('IDAT', compressedData);
 
@@ -79,7 +79,8 @@ function isPartOfA(x: number, y: number, size: number): boolean {
   const topBar = ny > margin && ny < margin + thickness && nx > margin && nx < 1 - margin;
 
   // Middle horizontal bar
-  const midBar = ny > 0.5 && ny < 0.5 + thickness && nx > margin + thickness && nx < 1 - margin - thickness;
+  const midBar =
+    ny > 0.5 && ny < 0.5 + thickness && nx > margin + thickness && nx < 1 - margin - thickness;
 
   return leftLeg || rightLeg || topBar || midBar;
 }
@@ -98,16 +99,16 @@ function createChunk(type: string, data: Buffer): Buffer {
 }
 
 function calculateCRC(data: Buffer): number {
-  let crc = 0xFFFFFFFF;
+  let crc = 0xffffffff;
 
   for (let i = 0; i < data.length; i++) {
     crc ^= data[i];
     for (let j = 0; j < 8; j++) {
-      crc = (crc & 1) ? (0xEDB88320 ^ (crc >>> 1)) : (crc >>> 1);
+      crc = crc & 1 ? 0xedb88320 ^ (crc >>> 1) : crc >>> 1;
     }
   }
 
-  return crc ^ 0xFFFFFFFF;
+  return crc ^ 0xffffffff;
 }
 
 // Generate icons

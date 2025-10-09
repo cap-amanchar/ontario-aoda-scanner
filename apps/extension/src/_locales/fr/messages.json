@@ -1,0 +1,290 @@
+{
+  "extensionName": {
+    "message": "ComplyCA Scanneur AODA",
+    "description": "Nom de l'extension"
+  },
+  "extensionDescription": {
+    "message": "Analyser les sites Web pour la conformité AODA et les violations WCAG 2.0 Niveau AA",
+    "description": "Description de l'extension"
+  },
+  "appTitle": {
+    "message": "ComplyCA",
+    "description": "Titre de l'application"
+  },
+  "appSubtitle": {
+    "message": "Scanneur AODA de l'Ontario",
+    "description": "Sous-titre de l'application"
+  },
+  "developerCredit": {
+    "message": "Développé par Nizar Amanchar pour le Canada ❤️",
+    "description": "Crédit du développeur"
+  },
+  "scanButton": {
+    "message": "Analyser cette page",
+    "description": "Bouton pour analyser la page actuelle"
+  },
+  "scanning": {
+    "message": "Analyse en cours...",
+    "description": "Texte d'état d'analyse"
+  },
+  "fullSiteScan": {
+    "message": "Analyser le site complet",
+    "description": "Bouton pour analyser le site entier"
+  },
+  "scanningWebsite": {
+    "message": "Analyse du site en cours...",
+    "description": "Statut d'analyse complète du site"
+  },
+  "scoreLabel": {
+    "message": "Score de conformité AODA",
+    "description": "Étiquette pour le score de conformité"
+  },
+  "compliant": {
+    "message": "Conforme",
+    "description": "Statut conforme"
+  },
+  "needsImprovement": {
+    "message": "Nécessite des améliorations",
+    "description": "Statut nécessite amélioration"
+  },
+  "critical": {
+    "message": "Critique",
+    "description": "Niveau de gravité critique"
+  },
+  "serious": {
+    "message": "Grave",
+    "description": "Niveau de gravité grave"
+  },
+  "moderate": {
+    "message": "Modéré",
+    "description": "Niveau de gravité modéré"
+  },
+  "minor": {
+    "message": "Mineur",
+    "description": "Niveau de gravité mineur"
+  },
+  "results": {
+    "message": "Résultats",
+    "description": "Titre de la section des résultats"
+  },
+  "allViolations": {
+    "message": "Toutes les violations",
+    "description": "Filtre toutes les violations"
+  },
+  "violations": {
+    "message": "Violations",
+    "description": "Étiquette des violations"
+  },
+  "all": {
+    "message": "Toutes",
+    "description": "Option de filtre toutes"
+  },
+  "bilingualSupported": {
+    "message": "Support bilingue détecté",
+    "description": "Message de support bilingue détecté"
+  },
+  "notBilingual": {
+    "message": "Pas bilingue",
+    "description": "Message pas bilingue"
+  },
+  "languages": {
+    "message": "Langues",
+    "description": "Étiquette des langues"
+  },
+  "perfectNoIssues": {
+    "message": "Parfait ! Aucun problème trouvé",
+    "description": "Titre aucun problème trouvé"
+  },
+  "perfectMessage": {
+    "message": "Cette page respecte les normes d'accessibilité WCAG 2.0 Niveau AA. Excellent travail !",
+    "description": "Message de conformité parfaite"
+  },
+  "scanAnother": {
+    "message": "Analyser une autre page",
+    "description": "Bouton analyser une autre page"
+  },
+  "scanFailed": {
+    "message": "Échec de l'analyse",
+    "description": "Titre d'erreur d'analyse"
+  },
+  "retryScan": {
+    "message": "Réessayer l'analyse",
+    "description": "Bouton réessayer l'analyse"
+  },
+  "dismiss": {
+    "message": "Ignorer",
+    "description": "Bouton ignorer"
+  },
+  "exportPDF": {
+    "message": "Exporter en PDF",
+    "description": "Bouton exporter en PDF"
+  },
+  "settings": {
+    "message": "Paramètres",
+    "description": "Bouton paramètres"
+  },
+  "autoScan": {
+    "message": "Analyse automatique au chargement",
+    "description": "Paramètre d'analyse automatique"
+  },
+  "darkMode": {
+    "message": "Mode sombre",
+    "description": "Paramètre mode sombre"
+  },
+  "showNotifications": {
+    "message": "Afficher les notifications",
+    "description": "Paramètre afficher les notifications"
+  },
+  "language": {
+    "message": "Langue",
+    "description": "Étiquette du paramètre de langue"
+  },
+  "english": {
+    "message": "Anglais",
+    "description": "Option de langue anglaise"
+  },
+  "french": {
+    "message": "Français",
+    "description": "Option de langue française"
+  },
+  "save": {
+    "message": "Enregistrer",
+    "description": "Bouton enregistrer"
+  },
+  "cancel": {
+    "message": "Annuler",
+    "description": "Bouton annuler"
+  },
+  "close": {
+    "message": "Fermer",
+    "description": "Bouton fermer"
+  },
+  "elements": {
+    "message": "éléments",
+    "description": "Nombre d'éléments"
+  },
+  "element": {
+    "message": "élément",
+    "description": "Élément unique"
+  },
+  "wcagCriterion": {
+    "message": "Critère WCAG",
+    "description": "Étiquette du critère WCAG"
+  },
+  "aodaSection": {
+    "message": "Section AODA",
+    "description": "Étiquette de la section AODA"
+  },
+  "penalty": {
+    "message": "Pénalité",
+    "description": "Étiquette de pénalité"
+  },
+  "affectedUsers": {
+    "message": "Utilisateurs affectés",
+    "description": "Étiquette des utilisateurs affectés"
+  },
+  "estimatedFixTime": {
+    "message": "Temps de correction estimé",
+    "description": "Étiquette du temps de correction estimé"
+  },
+  "minutes": {
+    "message": "minutes",
+    "description": "Unité de minutes"
+  },
+  "learnMore": {
+    "message": "En savoir plus",
+    "description": "Lien en savoir plus"
+  },
+  "scanComplete": {
+    "message": "Analyse terminée. {count} violations trouvées.",
+    "description": "Annonce d'analyse terminée",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+  "scanningAria": {
+    "message": "Analyse de la page pour les problèmes d'accessibilité",
+    "description": "Étiquette ARIA d'analyse"
+  },
+  "scanButtonAria": {
+    "message": "Analyser cette page pour la conformité AODA",
+    "description": "Étiquette ARIA du bouton d'analyse"
+  },
+  "viewDetails": {
+    "message": "Voir les détails pour {description}",
+    "description": "Étiquette ARIA voir les détails",
+    "placeholders": {
+      "description": {
+        "content": "$1",
+        "example": "Texte alternatif manquant"
+      }
+    }
+  },
+  "siteScanComplete": {
+    "message": "Analyse du site terminée !\nScore moyen : {score}/100 ({grade})\nPages analysées : {pages}",
+    "description": "Message d'analyse du site terminée",
+    "placeholders": {
+      "score": {
+        "content": "$1",
+        "example": "85"
+      },
+      "grade": {
+        "content": "$2",
+        "example": "B"
+      },
+      "pages": {
+        "content": "$3",
+        "example": "12"
+      }
+    }
+  },
+  "pagesScanned": {
+    "message": "{current} / {total} pages",
+    "description": "Nombre de pages analysées",
+    "placeholders": {
+      "current": {
+        "content": "$1",
+        "example": "5"
+      },
+      "total": {
+        "content": "$2",
+        "example": "10"
+      }
+    }
+  },
+  "averageScore": {
+    "message": "Score Moyen",
+    "description": "Étiquette score moyen"
+  },
+  "complianceRate": {
+    "message": "Taux de Conformité",
+    "description": "Étiquette taux de conformité"
+  },
+  "topViolations": {
+    "message": "Principales Violations",
+    "description": "Étiquette principales violations"
+  },
+  "pageResults": {
+    "message": "Résultats des Pages",
+    "description": "Étiquette résultats des pages"
+  },
+  "pages": {
+    "message": "pages",
+    "description": "Étiquette pages"
+  },
+  "passes": {
+    "message": "réussites",
+    "description": "Étiquette réussites"
+  },
+  "exportReport": {
+    "message": "Exporter le Rapport",
+    "description": "Bouton exporter le rapport"
+  },
+  "watermark": {
+    "message": "Créé avec ❤️ par Nizar Amanchar pour le Canada",
+    "description": "Texte du filigrane"
+  }
+}

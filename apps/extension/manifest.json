@@ -1,17 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "ModernA11y AODA Scanner",
+  "name": "__MSG_extensionName__",
   "version": "0.1.0",
-  "description": "Ontario AODA accessibility scanner for websites",
-  "permissions": [
-    "activeTab",
-    "storage",
-    "scripting"
-  ],
-  "host_permissions": [
-    "http://*/*",
-    "https://*/*"
-  ],
+  "description": "__MSG_extensionDescription__",
+  "default_locale": "en",
+  "permissions": ["activeTab", "storage", "scripting"],
+  "host_permissions": ["http://*/*", "https://*/*"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

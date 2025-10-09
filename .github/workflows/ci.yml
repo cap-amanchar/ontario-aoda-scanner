@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  test:
+    name: Test & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Type check
+        run: bun run type-check
+
+      - name: Lint
+        run: bunx biome check .
+
+      - name: Run tests
+        run: bun run test -- --run
+
+      - name: Build all packages
+        run: bun run build
+
+      - name: Validate extension build
+        run: |
+          if [ ! -f apps/extension/dist/manifest.json ]; then
+            echo "❌ Extension build failed - manifest.json not found"
+            exit 1
+          fi
+          echo "✅ Extension build validated"
+
+  sync-rules:
+    name: Validate AODA Rules
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Sync and validate AODA rules
+        run: bun run sync-rules
+        working-directory: packages/scanner
+
+      - name: Check for rule completeness
+        run: |
+          RULE_COUNT=$(grep -c "wcagCriterion:" packages/scanner/src/ontario/aoda-rules.ts || echo "0")
+          echo "📊 Total AODA rules: $RULE_COUNT"
+          if [ "$RULE_COUNT" -lt 25 ]; then
+            echo "⚠️  Warning: Less than 25 rules defined"
+          else
+            echo "✅ Good rule coverage ($RULE_COUNT rules)"
+          fi

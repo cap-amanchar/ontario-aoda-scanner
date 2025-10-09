@@ -55,13 +55,163 @@ export const AODA_RULES_MAP: Record<string, AODARule> = {
     penalty: 'Up to $100,000/day for organizations',
   },
 
-  'label': {
+  label: {
     wcagCriterion: '3.3.2 Labels or Instructions',
     wcagLevel: 'A',
     aodaSection: 'IASR 14(4) + IASR 11(1) Feedback Processes',
     impact: 'critical',
     affectedUsers: ['Screen reader users', 'Cognitive disabilities'],
     estimatedFixTime: 20,
+    penalty: 'Up to $100,000/day for organizations',
+  },
+
+  'document-title': {
+    wcagCriterion: '2.4.2 Page Titled',
+    wcagLevel: 'A',
+    aodaSection: 'IASR 14(4)',
+    impact: 'critical',
+    affectedUsers: ['Screen reader users', 'All users', 'Search engines'],
+    estimatedFixTime: 5,
+    penalty: 'Up to $100,000/day for organizations',
+  },
+
+  'input-button-name': {
+    wcagCriterion: '4.1.2 Name, Role, Value',
+    wcagLevel: 'A',
+    aodaSection: 'IASR 14(4)',
+    impact: 'critical',
+    affectedUsers: ['Screen reader users', 'Keyboard-only users'],
+    estimatedFixTime: 10,
+    penalty: 'Up to $100,000/day for organizations',
+  },
+
+  bypass: {
+    wcagCriterion: '2.4.1 Bypass Blocks',
+    wcagLevel: 'A',
+    aodaSection: 'IASR 14(4)',
+    impact: 'critical',
+    affectedUsers: ['Keyboard-only users', 'Screen reader users'],
+    estimatedFixTime: 20,
+    penalty: 'Up to $100,000/day for organizations',
+  },
+
+  'frame-title': {
+    wcagCriterion: '4.1.2 Name, Role, Value',
+    wcagLevel: 'A',
+    aodaSection: 'IASR 14(4)',
+    impact: 'critical',
+    affectedUsers: ['Screen reader users', 'Cognitive disabilities'],
+    estimatedFixTime: 10,
+    penalty: 'Up to $100,000/day for organizations',
+  },
+
+  'valid-lang': {
+    wcagCriterion: '3.1.1 Language of Page',
+    wcagLevel: 'A',
+    aodaSection: 'IASR 14(4) + Ontario Bilingual Requirements',
+    impact: 'critical',
+    affectedUsers: ['Screen reader users', 'French-speaking Ontarians'],
+    estimatedFixTime: 5,
+    penalty: 'AODA violation + Official Languages Act non-compliance',
+  },
+
+  'aria-required-attr': {
+    wcagCriterion: '4.1.2 Name, Role, Value',
+    wcagLevel: 'A',
+    aodaSection: 'IASR 14(4)',
+    impact: 'critical',
+    affectedUsers: ['Screen reader users', 'Assistive technology users'],
+    estimatedFixTime: 15,
+    penalty: 'Up to $100,000/day for organizations',
+  },
+
+  'aria-roles': {
+    wcagCriterion: '4.1.2 Name, Role, Value',
+    wcagLevel: 'A',
+    aodaSection: 'IASR 14(4)',
+    impact: 'critical',
+    affectedUsers: ['Screen reader users', 'Assistive technology users'],
+    estimatedFixTime: 15,
+    penalty: 'Up to $100,000/day for organizations',
+  },
+
+  'aria-required-children': {
+    wcagCriterion: '1.3.1 Info and Relationships',
+    wcagLevel: 'A',
+    aodaSection: 'IASR 14(4)',
+    impact: 'critical',
+    affectedUsers: ['Screen reader users', 'Assistive technology users'],
+    estimatedFixTime: 25,
+    penalty: 'Up to $100,000/day for organizations',
+  },
+
+  'aria-required-parent': {
+    wcagCriterion: '1.3.1 Info and Relationships',
+    wcagLevel: 'A',
+    aodaSection: 'IASR 14(4)',
+    impact: 'critical',
+    affectedUsers: ['Screen reader users', 'Assistive technology users'],
+    estimatedFixTime: 25,
+    penalty: 'Up to $100,000/day for organizations',
+  },
+
+  'aria-hidden-body': {
+    wcagCriterion: '4.1.2 Name, Role, Value',
+    wcagLevel: 'A',
+    aodaSection: 'IASR 14(4)',
+    impact: 'critical',
+    affectedUsers: ['Screen reader users', 'All users'],
+    estimatedFixTime: 5,
+    penalty: 'Up to $100,000/day for organizations',
+  },
+
+  'select-name': {
+    wcagCriterion: '4.1.2 Name, Role, Value',
+    wcagLevel: 'A',
+    aodaSection: 'IASR 14(4) + IASR 11(1) Feedback Processes',
+    impact: 'critical',
+    affectedUsers: ['Screen reader users', 'Cognitive disabilities'],
+    estimatedFixTime: 10,
+    penalty: 'Up to $100,000/day for organizations',
+  },
+
+  'input-image-alt': {
+    wcagCriterion: '1.1.1 Non-text Content',
+    wcagLevel: 'A',
+    aodaSection: 'IASR 14(4)',
+    impact: 'critical',
+    affectedUsers: ['Blind users', 'Screen reader users'],
+    estimatedFixTime: 10,
+    penalty: 'Up to $100,000/day for organizations',
+  },
+
+  'video-caption': {
+    wcagCriterion: '1.2.2 Captions (Prerecorded)',
+    wcagLevel: 'A',
+    aodaSection: 'IASR 14(4) + IASR 7 Accessible Formats',
+    impact: 'critical',
+    affectedUsers: ['Deaf users', 'Hard of hearing users'],
+    estimatedFixTime: 120,
+    penalty: 'Up to $100,000/day for organizations',
+  },
+
+  'meta-refresh': {
+    wcagCriterion: '2.2.1 Timing Adjustable',
+    wcagLevel: 'A',
+    aodaSection: 'IASR 14(4)',
+    impact: 'critical',
+    affectedUsers: ['Cognitive disabilities', 'Screen reader users'],
+    estimatedFixTime: 10,
+    penalty: 'Up to $100,000/day for organizations',
+  },
+
+  'autocomplete-valid': {
+    wcagCriterion: '1.3.5 Identify Input Purpose',
+    wcagLevel: 'AA',
+    aodaSection: 'IASR 14(4)(a)',
+    impact: 'critical',
+    affectedUsers: ['Cognitive disabilities', 'Motor disabilities'],
+    estimatedFixTime: 15,
     penalty: 'Up to $100,000/day for organizations',
   },
 
@@ -121,7 +271,7 @@ export const AODA_RULES_MAP: Record<string, AODARule> = {
     penalty: 'Up to $100,000/day for organizations',
   },
 
-  'region': {
+  region: {
     wcagCriterion: '1.3.1 Info and Relationships',
     wcagLevel: 'A',
     aodaSection: 'IASR 14(4)',

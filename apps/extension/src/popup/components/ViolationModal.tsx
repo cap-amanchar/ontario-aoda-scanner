@@ -1,4 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import type React from 'react';
+import { useEffect, useRef } from 'react';
+import { useTranslation } from '../../utils/i18n';
 
 interface ViolationNode {
   html: string;
@@ -26,6 +28,7 @@ interface ViolationModalProps {
 }
 
 const ViolationModal: React.FC<ViolationModalProps> = ({ violation, onClose }) => {
+  const { t } = useTranslation();
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -58,39 +61,40 @@ const ViolationModal: React.FC<ViolationModalProps> = ({ violation, onClose }) =
           <h3 id="modal-title" className="modal-title">
             {violation.description}
           </h3>
-          <div className={`badge ${violation.impact}`}>{violation.impact}</div>
+          <div className={`badge ${violation.impact}`}>{t(violation.impact)}</div>
         </div>
 
         {violation.wcagCriterion && (
           <div className="modal-section">
-            <strong>WCAG Criterion:</strong> {violation.wcagCriterion}
+            <strong>{t('wcagCriterion')}:</strong> {violation.wcagCriterion}
           </div>
         )}
 
         {violation.aodaSection && (
           <div className="modal-aoda-section">
-            <strong>🇨🇦 AODA Section:</strong> {violation.aodaSection}
+            <strong>🇨🇦 {t('aodaSection')}:</strong> {violation.aodaSection}
             {violation.penalty && (
-              <div className="modal-penalty">⚠️ {violation.penalty}</div>
+              <div className="modal-penalty">
+                ⚠️ {t('penalty')}: {violation.penalty}
+              </div>
             )}
           </div>
         )}
 
         {violation.affectedUsers && violation.affectedUsers.length > 0 && (
           <div className="modal-section">
-            <strong>Affected Users:</strong> {violation.affectedUsers.join(', ')}
+            <strong>{t('affectedUsers')}:</strong> {violation.affectedUsers.join(', ')}
           </div>
         )}
 
         {violation.fixTime && (
           <div className="modal-section">
-            <strong>Estimated Fix Time:</strong> ~{violation.fixTime} minutes
+            <strong>{t('estimatedFixTime')}:</strong> ~{violation.fixTime} {t('minutes')}
           </div>
         )}
 
         <div className="modal-section">
-          <strong>How to Fix:</strong>
-          <p className="modal-help">{violation.help}</p>
+          <strong>{violation.help}</strong>
         </div>
 
         <a
@@ -99,11 +103,11 @@ const ViolationModal: React.FC<ViolationModalProps> = ({ violation, onClose }) =
           rel="noopener noreferrer"
           className="modal-link"
         >
-          Learn more →
+          {t('learnMore')} →
         </a>
 
         <button onClick={onClose} className="modal-close-button">
-          Close
+          {t('close')}
         </button>
       </div>
     </div>

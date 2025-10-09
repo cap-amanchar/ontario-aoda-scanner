@@ -1,28 +1,32 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
+  type BilingualDetectionOptions,
+  checkBilingualSupport,
+  determineBilingualStatus,
+  extractLanguages,
   hasFrenchKeywords,
   isOntarioGovernmentDomain,
-  extractLanguages,
-  determineBilingualStatus,
-  checkBilingualSupport,
-  type BilingualDetectionOptions,
 } from './bilingual-detection';
 
 describe('Bilingual Detection', () => {
   describe('hasFrenchKeywords', () => {
-    it('should detect common French keywords', () => {
+    it('should require multiple French keywords for confidence', () => {
+      // 2+ structural words = true
       expect(hasFrenchKeywords('Bienvenue, français')).toBe(true);
-      expect(hasFrenchKeywords('Bonjour tout le monde')).toBe(true);
-      expect(hasFrenchKeywords('Accueil principal')).toBe(true);
-      expect(hasFrenchKeywords('Contactez-nous')).toBe(true);
-      expect(hasFrenchKeywords('Recherche avancée')).toBe(true);
-      expect(hasFrenchKeywords('Services publics')).toBe(true);
+
+      // 3+ UI keywords = true
+      expect(hasFrenchKeywords('Accueil principal contactez recherche')).toBe(true);
+      expect(hasFrenchKeywords('accueil contactez services politique')).toBe(true);
+
+      // Only 1 keyword = false
+      expect(hasFrenchKeywords('Bonjour tout le monde')).toBe(false);
+      expect(hasFrenchKeywords('Accueil principal')).toBe(false);
+      expect(hasFrenchKeywords('Contactez-nous')).toBe(false);
     });
 
     it('should be case insensitive', () => {
-      expect(hasFrenchKeywords('FRANÇAIS')).toBe(true);
-      expect(hasFrenchKeywords('BONJOUR')).toBe(true);
-      expect(hasFrenchKeywords('Accueil')).toBe(true);
+      expect(hasFrenchKeywords('BIENVENUE FRANÇAIS')).toBe(true);
+      expect(hasFrenchKeywords('accueil contactez recherche')).toBe(true);
     });
 
     it('should return false for English-only content', () => {
@@ -35,11 +39,12 @@ describe('Bilingual Detection', () => {
       expect(hasFrenchKeywords('')).toBe(false);
     });
 
-    it('should detect French keywords in mixed content', () => {
-      expect(hasFrenchKeywords('Welcome | Bienvenue')).toBe(true);
-      expect(
-        hasFrenchKeywords('Click here for français version')
-      ).toBe(true);
+    it('should detect substantial French content in mixed text', () => {
+      expect(hasFrenchKeywords('Welcome | Bienvenue Français Langue')).toBe(true);
+      expect(hasFrenchKeywords('Accueil principal contactez recherche services')).toBe(true);
+
+      // Single keyword in mixed content = false
+      expect(hasFrenchKeywords('Welcome and français only')).toBe(false);
     });
   });
 
@@ -123,12 +128,7 @@ describe('Bilingual Detection', () => {
     });
 
     it('should deduplicate language codes', () => {
-      const elements = [
-        { lang: 'en' },
-        { lang: 'en-US' },
-        { lang: 'en-CA' },
-        { lang: 'fr' },
-      ];
+      const elements = [{ lang: 'en' }, { lang: 'en-US' }, { lang: 'en-CA' }, { lang: 'fr' }];
 
       const result = extractLanguages(elements);
       expect(result.length).toBe(2);
@@ -139,42 +139,48 @@ describe('Bilingual Detection', () => {
 
   describe('determineBilingualStatus', () => {
     it('should return true when both EN and FR lang attributes present', () => {
-      const result = determineBilingualStatus(['en', 'fr'], false, false);
+      const result = determineBilingualStatus(['en', 'fr'], false, false, false);
       expect(result).toBe(true);
     });
 
-    it('should return true when language toggle and French content present', () => {
-      const result = determineBilingualStatus(['en'], true, true);
+    it('should return true for government sites with toggle and French content', () => {
+      const result = determineBilingualStatus(['en'], true, true, true);
       expect(result).toBe(true);
+    });
+
+    it('should return false for non-government sites with toggle and French content', () => {
+      // Stricter logic: non-gov sites need explicit lang attributes
+      const result = determineBilingualStatus(['en'], true, true, false);
+      expect(result).toBe(false);
     });
 
     it('should return false when only English detected', () => {
-      const result = determineBilingualStatus(['en'], false, false);
+      const result = determineBilingualStatus(['en'], false, false, false);
       expect(result).toBe(false);
     });
 
     it('should return false when only French detected', () => {
-      const result = determineBilingualStatus(['fr'], false, false);
+      const result = determineBilingualStatus(['fr'], false, false, false);
       expect(result).toBe(false);
     });
 
     it('should return false when toggle present but no French content', () => {
-      const result = determineBilingualStatus(['en'], true, false);
+      const result = determineBilingualStatus(['en'], true, false, true);
       expect(result).toBe(false);
     });
 
     it('should return false when French content present but no toggle', () => {
-      const result = determineBilingualStatus(['en'], false, true);
+      const result = determineBilingualStatus(['en'], false, true, false);
       expect(result).toBe(false);
     });
 
     it('should return false when no languages detected', () => {
-      const result = determineBilingualStatus([], false, false);
+      const result = determineBilingualStatus([], false, false, false);
       expect(result).toBe(false);
     });
 
     it('should handle multiple language codes beyond EN/FR', () => {
-      const result = determineBilingualStatus(['en', 'fr', 'es'], false, false);
+      const result = determineBilingualStatus(['en', 'fr', 'es'], false, false, false);
       expect(result).toBe(true); // Still bilingual due to EN+FR
     });
   });
@@ -184,7 +190,7 @@ describe('Bilingual Detection', () => {
       const options: BilingualDetectionOptions = {
         htmlLang: 'en',
         hostname: 'ontario.ca',
-        bodyText: 'Welcome | Bienvenue',
+        bodyText: 'Welcome | Bienvenue Français Langue', // 3 structural words
         languageToggleElements: 1,
         elementsWithLang: [{ lang: 'en' }, { lang: 'fr' }],
       };
@@ -201,7 +207,7 @@ describe('Bilingual Detection', () => {
       expect(result.languageToggles).toBe(1);
     });
 
-    it('should detect bilingual site with toggle and French content', () => {
+    it('should NOT detect non-government site as bilingual with only toggle and single keyword', () => {
       const options: BilingualDetectionOptions = {
         htmlLang: 'en',
         hostname: 'example.com',
@@ -212,9 +218,10 @@ describe('Bilingual Detection', () => {
 
       const result = checkBilingualSupport(options);
 
-      expect(result.isBilingual).toBe(true);
+      // Stricter: requires explicit lang attrs OR gov site with substantial French
+      expect(result.isBilingual).toBe(false);
       expect(result.hasLanguageToggle).toBe(true);
-      expect(result.hasFrenchContent).toBe(true);
+      expect(result.hasFrenchContent).toBe(false); // Only 1 keyword, needs 3+
       expect(result.isOntarioGov).toBe(false);
     });
 
@@ -282,7 +289,7 @@ describe('Bilingual Detection', () => {
       expect(result.languageToggles).toBe(0);
     });
 
-    it('should detect multiple language toggles', () => {
+    it('should detect multiple language toggles but require substantial French content', () => {
       const options: BilingualDetectionOptions = {
         htmlLang: 'en',
         hostname: 'example.com',
@@ -295,7 +302,8 @@ describe('Bilingual Detection', () => {
 
       expect(result.languageToggles).toBe(5);
       expect(result.hasLanguageToggle).toBe(true);
-      expect(result.isBilingual).toBe(true);
+      expect(result.hasFrenchContent).toBe(false); // Only 1 keyword
+      expect(result.isBilingual).toBe(false); // Not gov site + insufficient French
     });
 
     it('should handle mixed lang attributes with duplicates', () => {
@@ -304,12 +312,7 @@ describe('Bilingual Detection', () => {
         hostname: 'example.com',
         bodyText: 'Content',
         languageToggleElements: 0,
-        elementsWithLang: [
-          { lang: 'en' },
-          { lang: 'en-US' },
-          { lang: 'fr' },
-          { lang: 'fr-CA' },
-        ],
+        elementsWithLang: [{ lang: 'en' }, { lang: 'en-US' }, { lang: 'fr' }, { lang: 'fr-CA' }],
       };
 
       const result = checkBilingualSupport(options);
@@ -323,14 +326,14 @@ describe('Bilingual Detection', () => {
 
   describe('Edge cases and validation', () => {
     it('should handle extremely long body text', () => {
-      const longText = 'English content '.repeat(10000) + ' français';
+      const longText = `${'English content '.repeat(10000)} français bienvenue langue`;
 
       const options: BilingualDetectionOptions = {
         bodyText: longText,
       };
 
       const result = checkBilingualSupport(options);
-      expect(result.hasFrenchContent).toBe(true);
+      expect(result.hasFrenchContent).toBe(true); // Has 3 structural words
     });
 
     it('should handle special characters in lang attributes', () => {
@@ -358,15 +361,9 @@ describe('Bilingual Detection', () => {
       const options: BilingualDetectionOptions = {
         htmlLang: 'en',
         hostname: 'www.ontario.ca',
-        bodyText:
-          'Ontario government services - Services du gouvernement de l\'Ontario - Français',
+        bodyText: "Ontario government services - Services du gouvernement de l'Ontario - Accueil Recherche Contactez Français",
         languageToggleElements: 1,
-        elementsWithLang: [
-          { lang: 'en' },
-          { lang: 'en-CA' },
-          { lang: 'fr' },
-          { lang: 'fr-CA' },
-        ],
+        elementsWithLang: [{ lang: 'en' }, { lang: 'en-CA' }, { lang: 'fr' }, { lang: 'fr-CA' }],
       };
 
       const result = checkBilingualSupport(options);
@@ -374,7 +371,7 @@ describe('Bilingual Detection', () => {
       expect(result.isOntarioGov).toBe(true);
       expect(result.isBilingual).toBe(true);
       expect(result.hasLangAttribute).toBe(true);
-      expect(result.hasFrenchContent).toBe(true);
+      expect(result.hasFrenchContent).toBe(true); // Has 3+ UI keywords + structural words
       expect(result.hasLanguageToggle).toBe(true);
     });
 
@@ -394,11 +391,11 @@ describe('Bilingual Detection', () => {
       // This should trigger AODA bilingual requirement violation
     });
 
-    it('should handle private sector bilingual site', () => {
+    it('should handle private sector bilingual site with explicit lang attrs', () => {
       const options: BilingualDetectionOptions = {
         htmlLang: 'en',
         hostname: 'www.example-company.com',
-        bodyText: 'Services available in English and Français',
+        bodyText: 'Services available in English and Français Accueil Contactez',
         languageToggleElements: 2,
         elementsWithLang: [{ lang: 'en' }, { lang: 'fr' }],
       };
@@ -406,7 +403,7 @@ describe('Bilingual Detection', () => {
       const result = checkBilingualSupport(options);
 
       expect(result.isOntarioGov).toBe(false);
-      expect(result.isBilingual).toBe(true);
+      expect(result.isBilingual).toBe(true); // Has both en/fr lang attrs
     });
   });
 });
