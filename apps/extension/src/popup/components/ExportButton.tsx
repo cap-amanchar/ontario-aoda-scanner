@@ -67,7 +67,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({ result }) => {
     /* Base Styles */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: Helvetica, Arial, sans-serif;
       line-height: 1.6;
       color: #1f2937;
       background: white;

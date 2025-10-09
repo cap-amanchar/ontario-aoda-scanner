@@ -210,7 +210,7 @@ const showIndicator = () => {
     padding: 12px 16px;
     border-radius: 8px;
     font-size: 13px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
     font-weight: 600;
     z-index: 999999;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
