@@ -203,9 +203,9 @@ async function discoverFromRobots(origin: string, timeout: number): Promise<stri
  */
 async function discoverFromDOM(
   startUrl: string,
-  maxDepth: number,
-  origin: string,
-  includeExternal: boolean
+  _maxDepth: number,
+  _origin: string,
+  _includeExternal: boolean
 ): Promise<string[]> {
   // This is a simplified version - actual implementation will be in extension
   // For now, just return the start URL
