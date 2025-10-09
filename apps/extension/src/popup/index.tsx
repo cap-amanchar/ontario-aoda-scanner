@@ -71,6 +71,7 @@ const useScan = () => {
     total: number;
     url?: string;
   } | null>(null);
+  const [siteReport, setSiteReport] = useState<any | null>(null);
 
   const runScan = useCallback(async () => {
     setScanning(true);
@@ -195,6 +196,8 @@ const useScan = () => {
     runFullSiteScan,
     fullSiteScanning,
     scanProgress,
+    siteReport,
+    setSiteReport,
   };
 };
 
@@ -323,13 +326,14 @@ const App = () => {
     runFullSiteScan,
     fullSiteScanning,
     scanProgress,
+    siteReport,
+    setSiteReport,
   } = useScan();
   const { settings, saveSettings } = useSettings();
   const { t, language, changeLanguage } = useTranslation();
   const [selectedViolation, setSelectedViolation] = useState<Violation | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [filter, setFilter] = useState<FilterType>('all');
-  const [siteReport, setSiteReport] = useState<any | null>(null);
 
   // Keyboard shortcuts
   useEffect(() => {

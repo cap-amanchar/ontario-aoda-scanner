@@ -114,12 +114,25 @@ const runAccessibilityScan = async (): Promise<ScanResponse> => {
       const aodaData = getAODAMapping(violation.id);
 
       return {
-        ...violation,
+        id: violation.id,
+        impact: (violation.impact || 'moderate') as 'critical' | 'serious' | 'moderate' | 'minor',
+        description: violation.description,
+        help: violation.help,
+        helpUrl: violation.helpUrl,
         wcagCriterion: aodaData?.wcagCriterion,
         aodaSection: aodaData?.aodaSection,
         penalty: aodaData?.penalty,
         fixTime: aodaData?.estimatedFixTime,
         affectedUsers: aodaData?.affectedUsers,
+        nodes: violation.nodes.map((node) => ({
+          html: node.html,
+          target: Array.isArray(node.target)
+            ? node.target.map(String)
+            : typeof node.target === 'string'
+            ? [node.target]
+            : [JSON.stringify(node.target)],
+          failureSummary: node.failureSummary || '',
+        })),
       };
     });
 

@@ -1,6 +1,6 @@
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
-import { type Language, useTranslation } from '../../utils/i18n';
+import { useTranslation } from '../../utils/i18n';
 
 interface Settings {
   autoScan: boolean;

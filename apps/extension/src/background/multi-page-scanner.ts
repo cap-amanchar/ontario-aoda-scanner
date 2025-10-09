@@ -5,7 +5,7 @@
  * Runs in background service worker for performance
  */
 
-import { discoverRoutes, normalizeUrl } from '@moderna11y/scanner';
+import { discoverRoutes } from '@moderna11y/scanner';
 
 export interface PageScanResult {
   url: string;
